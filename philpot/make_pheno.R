@@ -27,4 +27,10 @@ pd$Sex = factor(pd$Sex, levels = c("M","F"))
 pd$Extract = factor(pd$"Initial RNA extraction/ homogenization (Date)")
 pd$Repurify = as.character(pd$"re-purification with Zymo (Date")
 pd$Repurify = pd$Repurify == "2016-03-22"
+pd = pd[pd$Line!='Ube3a',]
+pd$Genotype = ifelse(pd$'General genotype'=='Control','WT',pd$Line)
+pd$Genotype = factor(pd$Genotype,levels = c('WT','Act','Nest','Del','R579W'))
+
 save(pd,file = './rdas/pheno.rda')
+#write.table(gsub('.fq.gz','',pd$"BGI file name"),file = paste0(dir,'/SAMPLE_IDs.txt'),
+ #           col.names = F,row.names = F,quote = F)
