@@ -101,7 +101,7 @@ legend("bottomright", legend = levels(pd$Genotype),pch =21, pt.bg = 1:3,cex= 1.2
 ###################
 # statistical model
 # adjust for linear relationship w/ PC2 and gene assignment rate
-mod = model.matrix(~Genotype+Age+totalAssignedGene, data=pd)
+mod = model.matrix(~Genotype+Age, data=pd)
 
 ###################
 # Gene DE, with SVA
@@ -118,7 +118,7 @@ outGene = outGene[order(outGene$pval),]
 outGene$fdr = p.adjust(outGene$pval, "fdr")
 outGene$EntrezID = geneMap[rownames(outGene),c("EntrezID")]
 sigGene = outGene[outGene$pval < 0.01,]
-sum(sigGene$fdr<0.05) #9 genes FDR significant
+sum(sigGene$fdr<0.05) #5 genes FDR significant
 
 #########################
 # exon DE, with SVA
@@ -135,7 +135,7 @@ outExon = outExon[order(outExon$pval),]
 outExon$fdr = p.adjust(outExon$pval, "fdr")
 outExon$EntrezID = exonMap[rownames(outExon),c("EntrezID")]
 sigExon = outExon[outExon$pval < 0.01,]
-sum(sigExon$fdr<0.05) #40 exons FDR significant
+sum(sigExon$fdr<0.05) #33 exons FDR significant
 
 ######################
 ### junction RP10Ms
@@ -162,4 +162,4 @@ WriteXLS(list(Gene = sigGene,Exon= sigExon, Junction = sigJxn, phenotype = pd),
          ExcelFileName = 'tables/mouse_tcf4_DE_table.xls')
 save(svaGene, svaExon, svaJxn, file="rdas/mouse_tcf4_sva_objects.rda")
 save(pd, outGene, outExon, outJxn, file="rdas/mouse_tcf4_DE_objects.rda")
-
+rm(list = ls())

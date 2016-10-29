@@ -1,5 +1,5 @@
 
-R version 3.3.1 Patched (2016-09-30 r71426) -- "Bug in Your Hair"
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -16,8 +16,6 @@ Type 'contributors()' for more information and
 Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
-
-[Previously saved workspace restored]
 
 > ### Maher mouse differential expression analysis 
 > # qsub -V -l mf=10G,h_vmem=15G,h_stack=256M -cwd -b y R CMD BATCH analyze_tcf4_mouse.R
@@ -76,192 +74,10 @@ Loading required package: genefilter
 > 
 > table(jMap$code[meanJxnExprs > 0.2])
 Loading required package: GenomicRanges
-Loading required package: stats4
-Loading required package: BiocGenerics
-Loading required package: parallel
-
-Attaching package: ‘BiocGenerics’
-
-The following objects are masked from ‘package:parallel’:
-
-    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
-    clusterExport, clusterMap, parApply, parCapply, parLapply,
-    parLapplyLB, parRapply, parSapply, parSapplyLB
-
-The following object is masked from ‘package:limma’:
-
-    plotMA
-
-The following objects are masked from ‘package:stats’:
-
-    IQR, mad, xtabs
-
-The following objects are masked from ‘package:base’:
-
-    anyDuplicated, append, as.data.frame, cbind, colnames, do.call,
-    duplicated, eval, evalq, Filter, Find, get, grep, grepl, intersect,
-    is.unsorted, lapply, lengths, Map, mapply, match, mget, order,
-    paste, pmax, pmax.int, pmin, pmin.int, Position, rank, rbind,
-    Reduce, rownames, sapply, setdiff, sort, table, tapply, union,
-    unique, unsplit, which, which.max, which.min
-
-Loading required package: S4Vectors
-
-Attaching package: ‘S4Vectors’
-
-The following objects are masked from ‘package:base’:
-
-    colMeans, colSums, expand.grid, rowMeans, rowSums
-
-Loading required package: IRanges
-
-Attaching package: ‘IRanges’
-
-The following object is masked from ‘package:nlme’:
-
-    collapse
-
-Loading required package: GenomeInfoDb
-
-AltStartEnd    ExonSkip       InEns       Novel 
-      24071        7581      162812       21404 
-> 
-> tcf4Index=which(jMap$newGeneSymbol == "Tcf4")
-> table(jMap$code[tcf4Index])
-
-AltStartEnd    ExonSkip       InEns       Novel 
-        199          34          29          26 
-> 
-> ##############################
-> # filter expression levels ###
-> # gene
-> gIndex = which(rowMeans(geneRpkm) > 0.1)
-> geneRpkm = geneRpkm[gIndex,]
-> geneMap = geneMap[gIndex,]
-> 
-> # exon
-> eIndex = which(rowMeans(exonRpkm) > 0.1)
-> exonRpkm = exonRpkm[eIndex,]
-> exonMap = exonMap[eIndex,]
-> 
-> # junction
-> jIndex=which(rowMeans(jRpkm) > 1 & jMap$code != "Novel")
-> jRpkm = jRpkm[jIndex,]
-> jMap = jMap[jIndex]
-Loading required package: Biostrings
-Loading required package: XVector
-> 
-> dim(geneRpkm) ; dim(exonRpkm) ; dim(jRpkm)
-[1] 20531    36
-[1] 299450     36
-[1] 142912     36
-> 
-> ######################
-> # hierarchal clustering
-> yGene = log2(geneRpkm+1)
-> hc = hclust(dist(t(yGene)))
-> plot(hc)
-> 
-> ##########################################################
-> # remove outlier mouse 31, adult, HT, remove from analysis
-> pd = pd[-31,]
-> geneRpkm = geneRpkm[,-31]
-> exonRpkm = exonRpkm[,-31]
-> jRpkm = jRpkm[,-31]
-> 
-> #############################
-> # Exploratory analysis
-> yGene = log2(geneRpkm+1)
-> pcaGene = prcomp(t(yGene))
-> 
-> plot(pcaGene$x, pch=21,bg=as.numeric(pd$Age),main = "Gene expression PCA", cex.lab = 1.25)
-> legend("bottomright", legend = levels(pd$Age),pch =21, pt.bg = 1:3,cex= 1.25)
-> 
-> plot(pcaGene$x, pch=21,bg=as.numeric(pd$Genotype),main = "Gene expression PCA", cex.lab = 1.25)
-> legend("bottomright", legend = levels(pd$Genotype),pch =21, pt.bg = 1:3,cex= 1.25)
-> 
-> plot(pcaGene$x[,2]~pd$totalAssignedGene,bg=as.numeric(pd$Age), pch=21,
-+      xlab = "Gene Assignment Rate", ylab = "PC2",
-+      main = "PC2 v. Gene Assignment Rate", cex.lab = 1.25)
-> legend("bottomright", legend = levels(pd$Age),pch =21, pt.bg = 1:3,cex= 1.25)
-> 
-> plot(pcaGene$x[,2]~pd$mitoRate,bg=as.numeric(pd$Genotype), pch=21,
-+      xlab = "Mito Map Rate", ylab = "PC2",
-+      main = "PC2 v. MitoRate", cex.lab = 1.25)
-> legend("bottomright", legend = levels(pd$Genotype),pch =21, pt.bg = 1:3,cex= 1.25)
-> 
-> ###################
-> # statistical model
-> # adjust for linear relationship w/ PC2 and gene assignment rate
-> mod = model.matrix(~Genotype+Age+totalAssignedGene, data=pd)
-> 
-> ###################
-> # Gene DE, with SVA
-> yGene = log2(geneRpkm+1)
-> svaGene = sva(yGene, mod) 
-Number of significant surrogate variables is:  7 
-Iteration (out of 5 ):1  2  3  4  5  > modGene = cbind(mod, svaGene$sv)
-> 
-> fitGene = lmFit(yGene, modGene)
-> ebGene = ebayes(fitGene)
-> outGene = data.frame(Symbol = geneMap$Symbol, log2FC = fitGene$coef[,2],  
-+                      pval = ebGene$p[,2], tval = ebGene$t[,2],
-+                      meanRpkm = rowMeans(geneRpkm),Location=geneMap$coord)
-> outGene = outGene[order(outGene$pval),]
-> outGene$fdr = p.adjust(outGene$pval, "fdr")
-> outGene$EntrezID = geneMap[rownames(outGene),c("EntrezID")]
-> sigGene = outGene[outGene$pval < 0.01,]
-> sum(sigGene$fdr<0.05) #9 genes FDR significant
-[1] 9
-> 
-> #########################
-> # exon DE, with SVA
-> yExon = log2(exonRpkm+1)
-> svaExon = sva(yExon, mod)
-Number of significant surrogate variables is:  8 
-Iteration (out of 5 ):1  2  3  4  5  > modExon = cbind(mod, svaExon$sv)
-> 
-> fitExon = lmFit(yExon, modExon)
-> ebExon = ebayes(fitExon)
-> outExon = data.frame(Symbol = exonMap$Symbol,GeneID = exonMap$Geneid,
-+                      log2FC = fitExon$coef[,2], pval = ebExon$p[,2], tval = ebExon$t[,2],
-+                      Location = exonMap$coord, meanRpkm = rowMeans(exonRpkm))
-> outExon = outExon[order(outExon$pval),]
-> outExon$fdr = p.adjust(outExon$pval, "fdr")
-> outExon$EntrezID = exonMap[rownames(outExon),c("EntrezID")]
-> sigExon = outExon[outExon$pval < 0.01,]
-> sum(sigExon$fdr<0.05) #40 exons FDR significant
-[1] 40
-> 
-> ######################
-> ### junction RP10Ms
-> txIDs = sapply(jMap$ensemblTx, paste, collapse=";")
-> yJxn = as.matrix(log2(jRpkm+1))
-> svaJxn = sva(yJxn, mod)
-Number of significant surrogate variables is:  2 
-Iteration (out of 5 ):1  2  3  4  5  > modJxn = cbind(mod, svaJxn$sv)
-> 
-> fitJxn = lmFit(yJxn, modJxn)
-> ebJxn = ebayes(fitJxn)
-> outJxn = data.frame(Symbol = jMap$newGeneSymbol,GeneID = jMap$newGeneID,
-+                     log2FC = fitJxn$coef[,2], pval = ebJxn$p[,2], tval = ebJxn$t[,2],
-+                     txCode = jMap$code,	meanRp10M = rowMeans(jRpkm),
-+                     Location=ss(rownames(jRpkm),"\\("),TxIDs =txIDs)
-> outJxn = outJxn[order(outJxn$pval),]
-> outJxn$fdr = p.adjust(outJxn$pval, "fdr")
-> outJxn$EntrezID = geneMap[as.character(outJxn$GeneID),c("EntrezID")]
-> sigJxn = outJxn[outJxn$pval < 0.01,]
-> sum(sigJxn$fdr<.05) #2 DE junctions
-[1] 2
-> 
-> #####################
-> # save everything! :)
-> WriteXLS(list(Gene = sigGene,Exon= sigExon, Junction = sigJxn, phenotype = pd),
-+          ExcelFileName = 'tables/mouse_tcf4_DE_table.xls')
-> save(svaGene, svaExon, svaJxn, file="rdas/mouse_tcf4_sva_objects.rda")
-> save(pd, outGene, outExon, outJxn, file="rdas/mouse_tcf4_DE_objects.rda")
-> 
-> 
-> proc.time()
-   user  system elapsed 
-422.883   8.378 432.694 
+Error in .requirePackage(package) : 
+  unable to find required package ‘GenomicRanges’
+Calls: table ... .findInheritedMethods -> getClass -> getClassDef -> .requirePackage
+In addition: Warning message:
+In library(package, lib.loc = lib.loc, character.only = TRUE, logical.return = TRUE,  :
+  there is no package called ‘GenomicRanges’
+Execution halted

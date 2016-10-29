@@ -1,0 +1,177 @@
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ### PTEN mouse differential expression analysis using DESeq2
+> # qsub -V -l mf=100G,h_vmem=150G,h_stack=256M -cwd -b y R CMD BATCH analyze_pten_DESeq2.R
+> source('../DESeq2_functions.R') #work-horse of differential expression
+> 
+> ##############################################
+> # load phenotype data and RPKM expression data
+> load('./rdas/pheno.rda',envir = dat<-new.env())
+> load('/dcl01/lieber/ajaffe/Brady/mouseRNAseq/TilotPTEN/rawCounts_pten_OCT20_n18.rda')
+> pd = cbind(dat$pd,pd)
+> all.equal(pd$FileID,pd$SAMPLE_ID) #samples line up
+[1] TRUE
+> 
+> ##########################
+> # conform to DESeq2 data types
+> jCounts = as.matrix(as.data.frame(jCounts))
+Loading required package: S4Vectors
+Loading required package: stats4
+Loading required package: BiocGenerics
+Loading required package: parallel
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:parallel’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB
+
+The following objects are masked from ‘package:stats’:
+
+    IQR, mad, xtabs
+
+The following objects are masked from ‘package:base’:
+
+    anyDuplicated, append, as.data.frame, cbind, colnames, do.call,
+    duplicated, eval, evalq, Filter, Find, get, grep, grepl, intersect,
+    is.unsorted, lapply, lengths, Map, mapply, match, mget, order,
+    paste, pmax, pmax.int, pmin, pmin.int, Position, rank, rbind,
+    Reduce, rownames, sapply, setdiff, sort, table, tapply, union,
+    unique, unsplit, which, which.max, which.min
+
+
+Attaching package: ‘S4Vectors’
+
+The following objects are masked from ‘package:base’:
+
+    colMeans, colSums, expand.grid, rowMeans, rowSums
+
+> jIndex=which(jMap$code != "Novel")
+Loading required package: GenomicRanges
+Loading required package: IRanges
+Loading required package: GenomeInfoDb
+> jCounts = jCounts[jIndex,]
+> jMap = jMap[jIndex]
+Loading required package: Biostrings
+Loading required package: XVector
+> colnames(jCounts) = pd$SAMPLE_ID
+> rownames(pd) = pd$SAMPLE_ID
+> 
+> ##############################
+> # create and run DESeq objects
+> geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype+Age,sva = TRUE,parallel=TRUE)
+Creating DESeq object.
+Estimating sample size factors.
+Filtering genes.
+Estimating surrogate variables.
+Number of significant surrogate variables is:  4 
+Iteration (out of 5 ):1  2  3  4  5  
+Adding surrogate variables.
+Finding differential expression.
+using pre-existing size factors
+estimating dispersions
+gene-wise dispersion estimates: 24 workers
+mean-dispersion relationship
+final dispersion estimates, MLE betas: 24 workers
+fitting model and testing: 24 workers
+Finished.
+> exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype+Age,sva = TRUE,parallel=TRUE)
+Creating DESeq object.
+Estimating sample size factors.
+Filtering genes.
+Estimating surrogate variables.
+Number of significant surrogate variables is:  4 
+Iteration (out of 5 ):1  2  3  4  5  
+Adding surrogate variables.
+Finding differential expression.
+using pre-existing size factors
+estimating dispersions
+gene-wise dispersion estimates: 24 workers
+mean-dispersion relationship
+final dispersion estimates, MLE betas: 24 workers
+fitting model and testing: 24 workers
+Finished.
+> jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype+Age,sva = TRUE,parallel=TRUE)
+Creating DESeq object.
+converting counts to integer mode
+Estimating sample size factors.
+Filtering genes.
+Estimating surrogate variables.
+Number of significant surrogate variables is:  5 
+Iteration (out of 5 ):1  2  3  4  5  
+Adding surrogate variables.
+Finding differential expression.
+using pre-existing size factors
+estimating dispersions
+gene-wise dispersion estimates: 24 workers
+mean-dispersion relationship
+-- note: fitType='parametric', but the dispersion trend was not well captured by the
+   function: y = a/x + b, and a local regression fit was automatically substituted.
+   specify fitType='local' or 'mean' to avoid this message next time.
+final dispersion estimates, MLE betas: 24 workers
+fitting model and testing: 24 workers
+Finished.
+> 
+> ################################################################
+> # get DE results, and fold-change homozygous mutant v. wild-type
+> resGene <- results(geneDds,contrast = c('Genotype','Pten m3m4/m3m4','Pten wt/wt'),alpha=0.05) 
+> resExon <- results(exonDds,contrast = c('Genotype','Pten m3m4/m3m4','Pten wt/wt'),alpha=0.05) 
+> resJxn <- results(jxnDds,contrast = c('Genotype','Pten m3m4/m3m4','Pten wt/wt'),alpha=0.05) 
+> 
+> sum(resGene$padj < 0.05, na.rm=TRUE)
+[1] 3977
+> sum(resExon$padj < 0.05, na.rm=TRUE)
+[1] 5686
+> sum(resJxn$padj < 0.05, na.rm=TRUE)
+[1] 2868
+> 
+> outGene <- as.data.frame(resGene[order(resGene$padj,resGene$pvalue),])
+> outGene = cbind(outGene,geneMap[rownames(outGene),])
+> sigGene = outGene[which(outGene$padj<.05),]
+> 
+> outExon <- as.data.frame(resExon[order(resExon$padj,resExon$pvalue),])
+> outExon = cbind(outExon,exonMap[rownames(outExon),])
+> sigExon = outExon[which(outExon$padj<.05),]
+> 
+> outJxn <- as.data.frame(resJxn[order(resJxn$padj,resJxn$pvalue),])
+> outJxn = cbind(outJxn, as.data.frame(jMap)[rownames(outJxn),])
+> sigJxn = outJxn[which(outJxn$padj<.05),]
+> 
+> pdf('plots/DESeq2_MA_plots_pten.pdf')
+> plotMA(resGene, main="Gene MA plot", ylim=c(-.75,.75))
+> plotMA(resExon, main="Exon MA plot", ylim=c(-.75,.75))
+> plotMA(resJxn, main="Junction MA plot", ylim=c(-.75,.75))
+> dev.off()
+null device 
+          1 
+> 
+> #################
+> # save everything
+> library(WriteXLS)
+> WriteXLS(list(Gene = sigGene,Exon = sigExon,Junction = sigJxn), ExcelFileName = 'tables/pten_DE_table_DESeq2.xls',row.names=T)
+> save(outGene,outExon,outJxn,file = 'rdas/pten_DE_objects_DESeq2.rda')
+> save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/mouseRNAseq/TilotPTEN/pten_DESeq2_svaAdj.rda')
+> 
+> jaffe/Brady/mouseRNAseq/TilotPTEN/pten_DESeq2_svaAdj.rda')
++ 
++ Error: unexpected end of input
+Execution halted

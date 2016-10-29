@@ -1,0 +1,95 @@
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ### sweatt mouse differential expression analysis using DESeq2
+> # qsub -V -l mf=200G,h_vmem=250G,h_stack=256M -cwd -b y R CMD BATCH analyze_sweatt_DESeq2.R
+> source('../DESeq2_functions.R') #work-horse of differential expression
+> 
+> ##############################################
+> # load phenotype data and RPKM expression data
+> load('./rdas/pheno.rda',envir = dat<-new.env())
+> load('/dcl01/lieber/ajaffe/Brady/sweatt/rawCounts_sweatt_OCT20_n16.rda')
+> pd = cbind(dat$pd,pd)
+> all.equal(as.character(pd$SampleID),pd$SAMPLE_ID) #samples line up
+[1] TRUE
+> 
+> ##########################
+> # conform to DESeq2 data types
+> jCounts = as.matrix(as.data.frame(jCounts))
+Loading required package: S4Vectors
+Loading required package: stats4
+Loading required package: BiocGenerics
+Loading required package: parallel
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:parallel’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB
+
+The following objects are masked from ‘package:stats’:
+
+    IQR, mad, xtabs
+
+The following objects are masked from ‘package:base’:
+
+    anyDuplicated, append, as.data.frame, cbind, colnames, do.call,
+    duplicated, eval, evalq, Filter, Find, get, grep, grepl, intersect,
+    is.unsorted, lapply, lengths, Map, mapply, match, mget, order,
+    paste, pmax, pmax.int, pmin, pmin.int, Position, rank, rbind,
+    Reduce, rownames, sapply, setdiff, sort, table, tapply, union,
+    unique, unsplit, which, which.max, which.min
+
+
+Attaching package: ‘S4Vectors’
+
+The following objects are masked from ‘package:base’:
+
+    colMeans, colSums, expand.grid, rowMeans, rowSums
+
+> jIndex=which(jMap$code != "Novel")
+Loading required package: GenomicRanges
+Loading required package: IRanges
+Loading required package: GenomeInfoDb
+> jCounts = jCounts[jIndex,]
+> jMap = jMap[jIndex]
+Loading required package: Biostrings
+Loading required package: XVector
+> colnames(jCounts) = pd$SAMPLE_ID
+> rownames(pd) = pd$SAMPLE_ID
+> 
+> ##############################
+> # create and run DESeq objects
+> geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype,sva = TRUE,parallel=TRUE)
+Creating DESeq object.
+Estimating sample size factors.
+Filtering genes.
+Estimating surrogate variables.
+Number of significant surrogate variables is:  5 
+Iteration (out of 5 ):1  2  3  4  5  
+Adding surrogate variables.
+Finding differential expression.
+using pre-existing size factors
+estimating dispersions
+gene-wise dispersion estimates: 64 workers
+mean-dispersion relationship
+final dispersion estimates, MLE betas: 64 workers
+fitting model and testing: 64 workers
