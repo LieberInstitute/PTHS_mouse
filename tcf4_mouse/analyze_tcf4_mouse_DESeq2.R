@@ -65,7 +65,7 @@ dev.off()
 #################
 # save everything
 library(WriteXLS)
-WriteXLS(list(Gene = sigGene,Exon = sigExon,Junction = sigJxn), ExcelFileName = 'tables/mouse_tcf4_DE_table_DESeq2.xls',row.names=T)
+WriteXLS(list(Gene = sigGene,Exon = sigExon,Junction = sigJxn), ExcelFileName = 'tables/stable2_mouse_tcf4_DE_table_DESeq2.xls',row.names=T)
 save(outGene,outExon,outJxn,file = 'rdas/mouse_tcf4_DE_objects_DESeq2.rda')
 save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/mouseRNAseq/mouse_tcf4_DESeq2_svaAdj.rda')
 

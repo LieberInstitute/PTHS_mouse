@@ -2,8 +2,8 @@
 # qsub -V -l mf=10G,h_vmem=15G,h_stack=256M -cwd -b y R CMD BATCH analyze_mef2c.R
 source('../DESeq2_functions.R') #work-horse of differential expression
 
-##############################################
-# load phenotype data and RPKM expression data
+####################################################
+# load phenotype data and raw counts expression data
 load('./rdas/pheno.rda',envir = dat<-new.env())
 load('/dcl01/lieber/ajaffe/Brady/mef2c/rawCounts_MEF2C_OCT27_n6.rda')
 pd = cbind(dat$pd,pd)
@@ -21,11 +21,8 @@ rownames(pd) = pd$SAMPLE_ID
 ##############################
 # create and run DESeq objects
 geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype,sva = TRUE,parallel=TRUE)
-rm(geneCounts); gc()
 exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype,sva = TRUE,parallel=TRUE)
-rm(exonCounts); gc()
 jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype,sva = TRUE,parallel=TRUE)
-rm(jCounts); gc()
 
 ################################################################
 # get DE results, and fold-change homozygous mutant v. wild-type
@@ -61,3 +58,16 @@ library(WriteXLS)
 WriteXLS(list(Gene = sigGene,Exon = sigExon,Junction = sigJxn), ExcelFileName = 'tables/mef2c_DE_table_DESeq2.xls',row.names=T)
 save(outGene,outExon,outJxn,file = 'rdas/mef2c_DE_objects_DESeq2.rda')
 save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/mef2c/mef2c_DESeq2_svaAdj.rda')
+
+
+################
+# exploratory
+pd = colData(geneDds)
+yGene = log2(counts(geneDds,normalize = T)+1)
+#yGene = assays(geneDds)[[1]]
+plot(hclust(dist(t(yGene))))
+pca = prcomp(t(yGene))
+plot(pca$x, pch = 21, bg = factor(pd$Genotype))
+legend('topleft',legend = levels(factor(pd$Genotype)),pch =21, pt.bg = 1:2)
+
+

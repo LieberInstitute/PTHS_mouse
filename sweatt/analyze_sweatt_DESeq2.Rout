@@ -93,3 +93,22 @@ gene-wise dispersion estimates: 64 workers
 mean-dispersion relationship
 final dispersion estimates, MLE betas: 64 workers
 fitting model and testing: 64 workers
+Finished.
+> rm(geneCounts); gc()
+           used  (Mb) gc trigger  (Mb)  max used   (Mb)
+Ncells  4156520 222.0    9968622 532.4   9968622  532.4
+Vcells 25200388 192.3  126733172 966.9 149948485 1144.1
+> exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype,sva = TRUE,parallel=TRUE)
+Creating DESeq object.
+Estimating sample size factors.
+Filtering genes.
+Estimating surrogate variables.
+Number of significant surrogate variables is:  5 
+Iteration (out of 5 ):1  2  3  4  5  
+Adding surrogate variables.
+Finding differential expression.
+using pre-existing size factors
+estimating dispersions
+gene-wise dispersion estimates: 64 workers
+mean-dispersion relationship
+final dispersion estimates, MLE betas: 64 workers

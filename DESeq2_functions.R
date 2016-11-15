@@ -6,7 +6,7 @@ DESeq2 = function(countData,colData,design, sva = TRUE,parallel=TRUE){
   # initiate DESeqDataSet object
   cat('Creating DESeq object.\n')
   geneDds <- DESeqDataSetFromMatrix(countData = countData, colData = colData, design = design)
-  
+
   ############################################################
   # estimate sample size factors, catch data with sparse counts
   cat('Estimating sample size factors.\n')
