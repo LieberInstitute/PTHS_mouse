@@ -66,7 +66,6 @@ sigJxn = outJxn[apply(outJxn[,paste0("pvalue_",c(levels(pd$Geno)[2:5])),],1,func
 library(WriteXLS)
 WriteXLS(list(Gene = sigGene,Exon= sigExon, Junction = sigJxn, phenotype = pd),
          ExcelFileName = 'tables/philpot_DE_table.xls')
-save(svaGene, svaExon, svaJxn, file="rdas/philpot_sva_objects.rda")
 save(pd, outGene, outExon, outJxn, file="rdas/philpot_DE_objects_DESeq2.rda")
 save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/philpot/philpot_DESeq2_svaAdj.rda')
 
