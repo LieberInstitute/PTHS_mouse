@@ -20,12 +20,9 @@ rownames(pd) = pd$SAMPLE_ID
 
 ##############################
 # create and run DESeq objects
-geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype,sva = TRUE,parallel=TRUE)
-rm(geneCounts); gc()
-exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype,sva = TRUE,parallel=TRUE)
-rm(exonCounts); gc()
-jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype,sva = TRUE,parallel=TRUE)
-rm(jCounts); gc()
+geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype,sva = FALSE,parallel=TRUE)
+exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype,sva = FALSE,parallel=TRUE)
+jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype,sva = FALSE,parallel=TRUE)
 
 ################################################################
 # get DE results, and fold-change homozygous mutant v. wild-type
@@ -60,4 +57,4 @@ dev.off()
 library(WriteXLS)
 WriteXLS(list(Gene = sigGene,Exon = sigExon,Junction = sigJxn), ExcelFileName = 'tables/mecp2_DE_table_DESeq2.xls',row.names=T)
 save(outGene,outExon,outJxn,file = 'rdas/mecp2_DE_objects_DESeq2.rda')
-save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/mouseRNAseq/Rett/mecp2_DESeq2_svaAdj.rda')
+save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/mouseRNAseq/Rett/mecp2_DESeq2.rda')
