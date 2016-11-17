@@ -64,19 +64,21 @@ modExon = model.matrix(design(exonDds),data = pd)
 
 ###################
 # exon DE, with SVA
-fitExon = lmFit(tcf4Counts, modExon)
-outExon2 = toptable(fitExon,coef = 2,number = nrow(tcf4Counts),genelist = cbind(tcf4Map,meanRpkm = meanExonExprs),confint = T)
+outExon2 = tcf4Map
+outExon2$CI.L = with(outExon2,log2FoldChange -lfcSE)
+outExon2$CI.R = with(outExon2,log2FoldChange +lfcSE)
 outExon2 = outExon2[order(outExon2$Start),]
 #outExon$pos = round(apply(outExon[,c('Start','End')],1,mean))
 outExon2$pos = as.numeric(factor(outExon2$Start))
-ind = which(outExon2$adj.P.Val<.05)
+ind = which(outExon2$padj<.05)
 
 #############################################################
 # Exon plots with standard error, mice TCF4 on forward strand
-pdf("tcf4_mouse/plots/sfig1_tcf4_transcript_2_exons.pdf",height = 5, width = 6)
-ylim = c(min(outExon2[,c('CI.L','CI.R')])-.2,max(outExon2[,c('CI.L','CI.R')])+.2)
-outExon2$col = ifelse(outExon2$adj.P.Val<.05,'red' ,'black')
-plot(outExon2$pos,outExon2$logFC,xlab = 'Exon #',ylab = 'Log2 Fold-change',
+pdf("tcf4_mouse/plots/sfig1_tcf4_transcript_2_exons.pdf",height = 8, width = 10)
+ylim = c(min(outExon2[,c('CI.L','CI.R')])-.1,max(outExon2[,c('CI.L','CI.R')])+.1)
+outExon2$col = ifelse(outExon2$padj<.05,'red' ,'black')
+par(cex = 1.5)
+plot(outExon2$pos,outExon2$log2FoldChange,xlab = 'Exon #',ylab = 'Log2 Fold-change',
      ylim = ylim,main = 'Tcf4 Transcript 1 Exon Fold-change',cex.lab = 1.25,bg = outExon2$col,pch = 21)
 arrows(as.numeric(outExon2$pos),outExon2$CI.L,as.numeric(outExon2$pos),outExon2$CI.R,
        code=3,length=0.04,angle=90,col='black')
@@ -84,6 +86,7 @@ v1 = seq(1,nrow(outExon2),4)
 v2 = outExon2$pos[v1]
 abline(h = 0,col = 'red')
 text(x = ind,y= outExon2$CI.R[ind]+.1,labels = '*',cex = 1.5)
+legend('bottomleft', legend = '* FDR < 1e-10',bty = "n")
 dev.off()
 
 ################################
@@ -92,7 +95,7 @@ tcf4Exon = 2^cleaningY(yExon[rownames(outExon),],modExon, P = 4)-1
 pd$ExonExpr = tcf4Exon['e673537',]
 pd$fdr = outExon['e673537',c('padj')]
 
-pdf("tcf4_mouse/plots/fig1_tcf4_last_exon.pdf",height = 4.5, width = 4)
+pdf("tcf4_mouse/plots/fig1_tcf4_last_exon.pdf",height = 3.5, width = 3.5)
 ggplot(data=pd) +
   geom_boxplot(aes(x=Age, y=ExonExpr, fill=Genotype),position = position_dodge(width = .5),outlier.shape=NA) +
   theme_bw(base_size = 14, base_family = "Helvetica")  + 
