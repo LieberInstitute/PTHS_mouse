@@ -89,8 +89,35 @@ ggplot(data=dat,aes(x=log2FoldChange_mouse, y=log2FoldChange_human, fill=type)) 
         legend.position="none")
 dev.off()
 
-#####################################
-# plot human asd FC v tcf4 mouse
+#######################################
+# fisher exact tests, rho's and kappa's
 lapply(split(dat,dat$type),function(x) fisher.test(sign(x$log2FoldChange_mouse),sign(x$log2FoldChange_human)))
-lapply(split(dat,dat$type),function(x) with(x,cor.test(log2FoldChange_mouse,log2FoldChange_human,method = 'spearman')))
+lapply(split(dat,dat$type),function(x) with(x,cor(log2FoldChange_mouse,log2FoldChange_human,method = 'spearman')))
 lapply(split(dat,dat$type),function(x) getKappa(table(sign(x$log2FoldChange_mouse),sign(x$log2FoldChange_human))))
+
+#####################################
+# gene set analysis in these datasets
+library(clusterProfiler)
+library(org.Hs.eg.db)
+
+########################################################
+# background is expressed human genes with mouse homologs
+univ = as.character(out[outGene$hsapien_homolog,c('EntrezID')]) 
+gList = split(out[dat$hsapien_homolog,c('EntrezID')],dat$type)
+sapply(gList, length)
+
+############################
+# enrich all the GO terms :D
+compareGoMf = compareCluster(gList, fun = "enrichGO", universe = univ, ont = "MF",OrgDb=org.Hs.eg.db, 
+                             qvalueCutoff = 0.05, pvalueCutoff = 0.05, readable = TRUE)
+compareGoBp = compareCluster(gList, fun = "enrichGO", universe = univ, ont = "BP",OrgDb=org.Hs.eg.db, 
+                             qvalueCutoff = 0.05, pvalueCutoff = 0.05, readable = TRUE)
+compareGoCc = compareCluster(gList, fun = "enrichGO", universe = univ, ont = "CC",OrgDb=org.Hs.eg.db, 
+                             qvalueCutoff = 0.05, pvalueCutoff = 0.05, readable = TRUE)
+compareGo = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareGoCc=compareGoCc),simplify)
+
+###################
+# save the go table
+goTable = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareGoCc=compareGoCc),as.data.frame)
+save(compareGoMf,compareGoBp,compareGoCc,file = 'tcf4_mouse/rdas/psychENCODE_human_asd_GO_terms.rda')
+WriteXLS(goTable,ExcelFileName = 'tcf4_mouse/tables/stable8_psychENCODE_human_asd_GO_compareCluster.xls')

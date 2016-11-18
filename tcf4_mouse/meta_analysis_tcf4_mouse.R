@@ -24,43 +24,41 @@ outStats= data.frame(TCF4 = tcf4$outGene[labs,4],
                 UBE3A = ube3a$outGene[labs,4],
                 baseMean = tcf4$outGene[labs,1],geneMap)
 rownames(outStats) = labs
+outSE= data.frame(TCF4 = tcf4$outGene[labs,3], PTEN = pten$outGene[labs,3], MEF2C = mef2c$outGene[labs,3], 
+                  MECP2 = mecp2$outGene[labs,3], UBE3A = ube3a$outGene[labs,3])
 
 #############################################
 # drop missing rows, sort by most significant
 gIndex = which(complete.cases(outStats))
 geneMap = geneMap[gIndex,]
 outStats = outStats[gIndex,]
+outSE = outSE[gIndex,]
 
 ind = which(abs(outStats$TCF4) > 3)
 signif(cor(outStats[ind,1:5],use="comp"),2)
 pairs(outStats[ind,1:5])
 
-#########################
-# summary of t-statistics
-apply(outStats[,1:5],2,summary)
-
 ###################
 # null permutations
-W = sqrt(c(109,18,6,6,8))
-zNull= unlist(parallel::mclapply(seq(100),function(x){
-  stat = abs(apply(outStats[,1:5],2,sample))
-  stat = stat*matrix(W,nrow = nrow(stat),ncol = ncol(stat),byrow = T)
-  z = rowSums(stat)/sum(W^2)
-  return(z)
+W = 1/apply(outSE,2,mean,na.rm = T) # weighting by average standard error
+pNull= unlist(parallel::mclapply(seq(100),function(x){
+  stat = apply(outStats[,1:5],2,sample)
+  z = rowSums(stat*matrix(W,nrow = nrow(stat),ncol = ncol(stat),byrow = T))/sqrt(sum(W^2))
+  #z = rowSums(stat)/sqrt(6)
+  return(2*pnorm(-abs(z)))
 },mc.cores = parallel::detectCores()),use.names = F)
-zNull = zNull[order(zNull)]
-zecdf = ecdf(zNull)
+pNull = pNull[order(pNull)]
+pecdf = ecdf(pNull)
 
 ###############################################
 # Find meta p-value using absolute t-statistics
-stat = abs(outStats[,1:5])
-stat = stat*matrix(W,nrow = nrow(stat),ncol = ncol(stat),byrow = T)
-outStats$zscore = rowSums(stat)/sum(W^2)
-outStats$pvalue = ifelse(outStats$zscore>0,1-zecdf(outStats$zscore),zecdf(outStats$zscore))
+outStats$zscore = rowSums(outStats[,1:5]*matrix(W,nrow = nrow(outStats),ncol = 5,byrow = T))/sqrt(sum(W^2))
+#outStats$pvalue = ifelse(outStats$zscore>0,1-zecdf(outStats$zscore),zecdf(outStats$zscore))
+outStats$pvalue = pecdf(2*pnorm(-abs(outStats$zscore)))
+#outStats$pvalue = 2*pnorm(-abs(outStats$zscore))
 outStats$padj = p.adjust(outStats$pvalue,method = 'fdr')
 outStats = outStats[order(outStats$pvalue),]
 sum(outStats$padj<0.05,na.rm = T)
-
 #write.csv(outStats,file = 'tables/meta_analysis_genes.csv')
 
 

@@ -25,13 +25,13 @@ jCounts = jCounts[,-c(31)]
 
 ##############################
 # create and run DESeq objects
-geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype+Age+Line+totalAssignedGene,sva = TRUE,parallel=TRUE)
+geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype+Line+Age+totalAssignedGene,sva = TRUE,parallel=TRUE)
 rm(geneCounts); gc()
 
-exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype+Age+Line+totalAssignedGene,sva = TRUE,parallel=TRUE)
+exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype+Line+Age+totalAssignedGene,sva = TRUE,parallel=TRUE)
 rm(exonCounts); gc()
 
-jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype+Age+Line+totalAssignedGene,sva = TRUE,parallel=TRUE)
+jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype+Line+Age+totalAssignedGene,sva = TRUE,parallel=TRUE)
 rm(jCounts); gc()
 
 ############################################
