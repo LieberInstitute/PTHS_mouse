@@ -7,6 +7,7 @@ load('rdas/mouse_tcf4_DE_objects_DESeq2.rda',envir = discovery<- new.env())
 discovery = subset(discovery$outGene,padj< 0.05 & !is.na(padj))
 query = discovery$Symbol
 names(discovery) = paste0(names(discovery), '_Discovery')
+
 ###############################################
 # load replicate dataset philpot and sweatt
 load('../sweatt/rdas/sweatt_DE_objects_DESeq2.rda',envir = sweatt<- new.env())
@@ -14,53 +15,51 @@ load('../philpot/rdas/philpot_DE_objects_DESeq2.rda',envir = philpot<- new.env()
 
 #rename sweatt data
 names(sweatt$outGene) = paste0(names(sweatt$outGene),'_CA1')
-names(sweatt$outExon) = paste0(names(sweatt$outExon),'_CA1')
-names(sweatt$outJxn) = paste0(names(sweatt$outJxn),'_CA1')
 
 #combine datasets sweatt with philpot
 outGene = cbind(philpot$outGene, sweatt$outGene[rownames(philpot$outGene),1:6])
-e1 = paste(philpot$outExon$Chr, philpot$outExon$Start, philpot$outExon$End)
-e2 = paste(sweatt$outExon$Chr, sweatt$outExon$Start, sweatt$outExon$End)
-outExon = cbind(philpot$outExon, sweatt$outExon[match(e1,e2),1:6])
-outJxn = cbind(philpot$outJxn, sweatt$outJxn[rownames(philpot$outJxn),1:6])
 
-#find each gene/exon/junction replicated in other data
+#find each gene in other data
 gIndex = unlist(sapply(paste0("^",query,"$"), grep, outGene$Symbol))
-eIndex = unlist(sapply(paste0("^",query,"$"), grep, outExon$Symbol))
-jIndex = unlist(sapply(paste0("^",query,"$"), grep, outJxn$ensemblSymbol))
-
 sigGene = outGene[gIndex,]
 sigGene = cbind(discovery,sigGene[,8:37])
-sigExon = outExon[eIndex,]
-sigJxn = outJxn[jIndex,]
+
+##############################################################
+# determine if genes that replicated in all or any other model
+Line = c("Act",'Nest', 'Del', 'R579W', 'CA1')
+sigGene$replicatedAny = sapply(rownames(sigGene),function(g) {
+  repPval = sigGene[g,paste0('pvalue_',Line)]< 0.05
+  repFC = sign(sigGene[g,paste0('log2FoldChange_',Line)])== sign(sigGene[g,'log2FoldChange_Discovery'])
+  return(any(repPval & repFC))})
+sigGene$replicatedAll = sapply(rownames(sigGene),function(g) {
+  repPval = sigGene[g,paste0('pvalue_',Line)]< 0.05
+  repFC = sign(sigGene[g,paste0('log2FoldChange_',Line)])== sign(sigGene[g,'log2FoldChange_Discovery'])
+  return(all(repPval & repFC))})
+sigGene$numReplicated = sapply(rownames(sigGene),function(g) {
+  repPval = sigGene[g,paste0('pvalue_',Line)]< 0.05
+  repFC = sign(sigGene[g,paste0('log2FoldChange_',Line)])== sign(sigGene[g,'log2FoldChange_Discovery'])
+  return(sum(repPval & repFC))})
+sum(sigGene$replicatedAny) #36 
+sum(sigGene$replicatedAll) #7
 
 #########################
 # save for plotting sfig3
-save(sigGene,sigExon,sigJxn,file = "rdas/mouse_tcf4_replication.rda")
-
-#######################################################
-# filter to gene/exon/junction replicated in any genotype
-sigGene = sigGene[apply(
-  sigGene[,grep('pvalue',names(sigGene))],1,
-  function(x) any(x < 0.05)),]
-sigExon = sigExon[apply(
-  sigExon[,grep('pvalue',names(sigExon))],1,
-  function(x) any(x < 0.05)),]
-sigJxn = sigJxn[apply(
-  sigJxn[,grep('pvalue',names(sigJxn))],1,
-  function(x) any(x < 0.05)),]
+save(sigGene,file = "rdas/mouse_tcf4_replication.rda")
 
 ############################
 # replication by mouse model
 apply(sigGene[,grep('pvalue',names(sigGene))],2,function(x) sum(x<0.05))
-apply(sigExon[,grep('pvalue',names(sigExon))],2,function(x){
-  suppressWarnings(sum(tapply(x,sigExon$Symbol,min,na.rm = TRUE)>0.05))
-})
-apply(sigJxn[,grep('pvalue',names(sigJxn))],2,function(x) {
- suppressWarnings(sum(tapply(x,sigJxn$ensemblSymbol,min,na.rm = TRUE)>0.05))
-})
+
+############################
+# genes that replicated in all 
+# Mc4r, Atp2b4, Tmem44, Enpp6, Tmem88b, Gm4211, and Mog
+sigGene$Symbol_Discovery[sigGene$replicatedAll] 
+
+#############################################################
+# genes that replicated in any and how many models replicated 
+sigGene[sigGene$replicatedAny,c('Symbol_Discovery','numReplicated')]
+sum(sigGene$numReplicated>=4)
 
 ###########################
 # save replicated gene list!
-WriteXLS(list(Gene = sigGene,Exon = sigExon, Junction = sigJxn),
-         ExcelFileName = "tables/stable4_DE_feature_replication.xls")
+WriteXLS(sigGene, ExcelFileName = "tables/stable3_DE_feature_replication.xls")
