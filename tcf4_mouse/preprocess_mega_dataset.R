@@ -70,3 +70,4 @@ jCounts = cbind(maherCounts$jCounts[mJxn,],
                    sweattCounts$jCounts[mJxn,])
 
 save(pd, geneCounts,geneMap,exonCounts,exonMap,jCounts,jMap,file = '/dcl01/lieber/ajaffe/Brady/mouseRNAseq/rawCounts_mega_dataset_nov14_n110.rda')
+

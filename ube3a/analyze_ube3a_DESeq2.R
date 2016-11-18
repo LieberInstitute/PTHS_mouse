@@ -21,9 +21,9 @@ rownames(pd) = pd$SAMPLE_ID
 
 ##############################
 # create and run DESeq objects
-geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype+Age,sva = TRUE,parallel=TRUE)
-exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype+Age,sva = TRUE,parallel=TRUE)
-jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype+Age,sva = TRUE,parallel=TRUE)
+geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype+Age+totalAssignedGene,sva = TRUE,parallel=TRUE)
+exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype+Age+totalAssignedGene,sva = TRUE,parallel=TRUE)
+jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype+Age+totalAssignedGene,sva = TRUE,parallel=TRUE)
 
 ############################################################
 # get DE results, and fold-change of each het mouse genotype
@@ -48,17 +48,16 @@ outJxn = cbind(outJxn, as.data.frame(jMap)[rownames(outJxn),])
 sigJxn = outJxn[which(outJxn$pvalue<.01),]
 
 pdf('plots/DESeq2_MA_plots_ube3a.pdf')
-plotMA(resGene, main="Gene MA plot", ylim=c(-4,4))
+plotMA(resGene, main="Gene MA plot", ylim=c(-2,2))
 plotMA(resExon, main="Exon MA plot",  ylim=c(-4,4))
 plotMA(resJxn, main="Junction MA plot",  ylim=c(-4,4))
 dev.off()
 
-
 #######################################
 # save all the differential expressions
 library(WriteXLS)
-WriteXLS(list(Gene = sigGene,Exon= sigExon, Junction = sigJxn, phenotype = pd),
+WriteXLS(list(Gene = sigGene,Exon = sigExon, Junction = sigJxn, phenotype = pd),
          ExcelFileName = 'tables/ube3a_DE_table.xls')
-save(pd, outGene, outExon, outJxn, file="rdas/ube3a_DE_objects_DESeq2.rda")
+save(pd, outGene,outExon,outJxn, file="rdas/ube3a_DE_objects_DESeq2.rda")
 save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/ube3a/ube3a_DESeq2_svaAdj.rda')
 

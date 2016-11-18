@@ -92,7 +92,7 @@ ggplot(data=dat.melt[as.numeric(dat.melt$variable) %in% c(19:36),],aes(x=Age, y=
 dev.off()
 
 ###############
-# volcano plots
+# gene MA plots
 outGene$col = '#000000' #black
 outGene$col[outGene$pvalue<0.01] = '#ff69b480' #pink
 outGene$col[outGene$padj<0.05] = '#ff0000' #red

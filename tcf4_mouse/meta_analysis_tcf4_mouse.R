@@ -10,16 +10,18 @@ load('rdas/mega_dataset_DE_objects_DESeq2.rda',envir = tcf4<-new.env())
 load('../pten/rdas/pten_DE_objects_DESeq2.rda',envir = pten<-new.env())
 load('../mef2c/rdas/mef2c_DE_objects_DESeq2.rda',envir = mef2c<-new.env())
 load('../mecp2/rdas/mecp2_DE_objects_DESeq2.rda',envir = mecp2<-new.env())
+load("../ube3a/rdas/ube3a_DE_objects_DESeq2.rda",envir = ube3a<-new.env())
 
 ###############################
 # extract and merge t-statistics
 geneMap = tcf4$outGene[,-c(1:6)]
-geneMap = geneMap[!(geneMap$Symbol %in% c('Tcf4','Mef2c', 'Pten','Mecp2')),]
+geneMap = geneMap[!(geneMap$Symbol %in% c('Tcf4','Mef2c','Pten','Mecp2','Ube3a')),]
 labs = rownames(geneMap)
 outStats= data.frame(TCF4 = tcf4$outGene[labs,4],
                 PTEN = pten$outGene[labs,4],
                 MEF2C = mef2c$outGene[labs,4],
                 MECP2 = mecp2$outGene[labs,4],
+                UBE3A = ube3a$outGene[labs,4],
                 baseMean = tcf4$outGene[labs,1],geneMap)
 rownames(outStats) = labs
 
@@ -29,15 +31,19 @@ gIndex = which(complete.cases(outStats))
 geneMap = geneMap[gIndex,]
 outStats = outStats[gIndex,]
 
+ind = which(abs(outStats$TCF4) > 3)
+signif(cor(outStats[ind,1:5],use="comp"),2)
+pairs(outStats[ind,1:5])
+
 #########################
 # summary of t-statistics
-apply(outStats[,1:4],2,summary)
+apply(outStats[,1:5],2,summary)
 
 ###################
 # null permutations
-W = sqrt(c(109,18,6,6))
-zNull= unlist(parallel::mclapply(seq(1000),function(x){
-  stat = abs(apply(outStats[,1:4],2,sample))
+W = sqrt(c(109,18,6,6,8))
+zNull= unlist(parallel::mclapply(seq(100),function(x){
+  stat = abs(apply(outStats[,1:5],2,sample))
   stat = stat*matrix(W,nrow = nrow(stat),ncol = ncol(stat),byrow = T)
   z = rowSums(stat)/sum(W^2)
   return(z)
@@ -47,7 +53,7 @@ zecdf = ecdf(zNull)
 
 ###############################################
 # Find meta p-value using absolute t-statistics
-stat = abs(outStats[,1:4])
+stat = abs(outStats[,1:5])
 stat = stat*matrix(W,nrow = nrow(stat),ncol = ncol(stat),byrow = T)
 outStats$zscore = rowSums(stat)/sum(W^2)
 outStats$pvalue = ifelse(outStats$zscore>0,1-zecdf(outStats$zscore),zecdf(outStats$zscore))
