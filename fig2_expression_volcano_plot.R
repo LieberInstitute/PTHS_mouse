@@ -23,8 +23,7 @@ table(sign(sigGene$log2FoldChange))
 
 ######################
 # get rlog counts
-yGene = rlog(geneDds)
-yGene = assays(yGene)[[1]]
+yGene = log2(counts(geneDds,normalize = T)+1)
 plot(hclust(dist(t(yGene))))
 
 ####################
@@ -67,27 +66,16 @@ names(dat) = c(names(pd),as.character(sigGene$Symbol[-c(1:6)]))
 dat.melt = melt(data = dat, id = names(pd),value.name = "FPKM")
 dat.melt$variable = factor(as.character(dat.melt$variable))
 
-pdf('tcf4_mouse/plots/sfig2_expression_plots.pdf',width = 8.5, height = 11)
-ggplot(data=dat.melt[as.numeric(dat.melt$variable) %in% c(1:18),],aes(x=Age, y=FPKM, fill=Genotype)) +
+pdf('tcf4_mouse/plots/sfig2_expression_plots.pdf',width = 11, height = 8.5)
+ggplot(data=dat.melt,aes(x=Age, y=FPKM, fill=Genotype)) +
   geom_boxplot(aes(x=Age, y=FPKM, fill=Genotype), position = position_dodge(width = .5),outlier.shape=NA) +
-  theme_bw(base_size = 14, base_family = "Helvetica")  + facet_wrap(~variable,scales ="free_y",ncol =3) + 
+  theme_bw(base_size = 14, base_family = "Helvetica")  + facet_wrap(~variable,scales ="free_y",ncol =6) + 
   geom_point(pch=21, position=position_jitterdodge(dodge.width = .5)) +
   scale_fill_manual(values=c("gray","red"),breaks= c("WT","Het"),labels = c("","")) +
   scale_x_discrete(labels =c("P1","P21","Adult")) + ylab("Adjusted Counts | SVs") +
   xlab("") + theme(axis.text.x=element_text(angle=45,hjust = 1),
                    strip.background = element_rect(fill = "white", colour = "white"),
-                   text = element_text(family="Helvetica", size=12),
-                   legend.position = "none")
-
-ggplot(data=dat.melt[as.numeric(dat.melt$variable) %in% c(19:36),],aes(x=Age, y=FPKM, fill=Genotype)) +
-  geom_boxplot(aes(x=Age, y=FPKM, fill=Genotype), position = position_dodge(width = .5),outlier.shape=NA) +
-  theme_bw(base_size = 14, base_family = "Helvetica")  + facet_wrap(~variable,scales ="free_y",ncol =3) + 
-  geom_point(pch=21, position=position_jitterdodge(dodge.width = .5)) +
-  scale_fill_manual(values=c("gray","red"),breaks= c("WT","Het"),labels = c("","")) +
-  scale_x_discrete(labels =c("P1","P21","Adult")) + ylab("Adjusted Counts | SVs") +
-  xlab("") + theme(axis.text.x=element_text(angle=45,hjust = 1),
-                   strip.background = element_rect(fill = "white", colour = "white"),
-                   text = element_text(family="Helvetica", size=12),
+                   text = element_text(family="Helvetica", size=10,face="bold"),
                    legend.position = "none")
 dev.off()
 

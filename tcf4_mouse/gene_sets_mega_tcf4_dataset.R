@@ -41,3 +41,28 @@ dev.off()
 save(compareKegg, compareGo, file = "rdas/gene_sets_mega_dataset.rda")
 WriteXLS(lapply(c(compareGo,compareKegg=compareKegg), as.data.frame),ExcelFileName = "tables/stable6_gene_sets_mega_dataset.xls")
 
+
+
+######################
+# run with GSEA method 
+# make genelist of Log2FC, name is EntrezID, order decreasing
+ord = order(outGene$log2FoldChange,decreasing = T)
+sigStats = outGene$log2FoldChange[ord]
+names(sigStats) = as.character(outGene$EntrezID[ord])
+
+##################################
+# find GO and KEGG term enrichment
+compareKegg = gseKEGG(sigStats, organism = "mmu", nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+compareGoMf = gseGO(sigStats, ont = "MF",OrgDb=org.Mm.eg.db,  nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+compareGoBp = gseGO(sigStats, ont = "BP",OrgDb=org.Mm.eg.db,  nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+compareGoCc = gseGO(sigStats, ont = "CC",OrgDb=org.Mm.eg.db,  nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+
+
+######
+# save
+GOList =lapply(list(Molecular_Function=compareGoMf,Biological_Process=compareGoBp,Cellular_Compartment = compareGoCc,KEGG_Term = compareKegg),as.data.frame)
+GO = do.call('rbind',GOList)
+GO$Category = ss(rownames(GO),'\\.')
+save(GO,compareKegg,compareGoMf,compareGoBp,compareGoCc, file = "rdas/gene_sets_gsea_mega_dataset.rda")
+WriteXLS(GO,ExcelFileName = "tables/gene_sets_gsea_mega_dataset.xls")
+
