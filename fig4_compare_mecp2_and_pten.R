@@ -44,7 +44,9 @@ with(outGene2,cor.test(x = TCF4_log2FC,y = log2FoldChange,method = 'spearman'))
 
 #####################################
 # plot log2fc TCF4 vs. PTEN and MECP2
-dat = do.call('rbind',list(MECP2=outGene1,PTEN = outGene2))
+datList = list(MECP2=outGene1,PTEN = outGene2)
+WriteXLS::WriteXLS(datList,ExcelFileName = 'tcf4_mouse/tables/stable8_mecp2_pten_comparison.xls')
+dat = do.call('rbind',datList)
 dat$Mutation = ss(rownames(dat),'\\.')
 
 pdf('tcf4_mouse/plots/fig5_asd_mice_compare_logFC.pdf',height = 5,width = 9)
