@@ -42,6 +42,8 @@ dim(outGene2) #666 out of 1370 genes DE in PTEN
 with(outGene2,cor.test(x = TCF4_log2FC,y = log2FoldChange,method = 'spearman'))
 1-getKappa(t2) #negative enrichment
 
+
+
 #####################################
 # plot log2fc TCF4 vs. PTEN and MECP2
 datList = list(MECP2=outGene1,PTEN = outGene2)

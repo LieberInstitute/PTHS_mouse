@@ -1,5 +1,12 @@
 ## GO Term analysis for Maher tcf4 mouse
 # qsub -V -l mf=10G,h_vmem=15G,h_stack=256M -cwd -b y R CMD BATCH gene_sets_tcf4_mouse.R
+getSymbol = function(entrezList, geneMap){
+  sapply(entrezList,function(e){
+    a = unlist(strsplit(e,'/'))
+    s = geneMap$Symbol[match(a,geneMap$EntrezID)]
+    return(paste(s,collapse = '/'))
+  })
+}
 library(jaffelab)
 library(WriteXLS)
 library(clusterProfiler)
@@ -62,6 +69,8 @@ compareGoCc = gseGO(sigStats, ont = "CC",OrgDb=org.Mm.eg.db,  nPerm = 1000, minG
 GOList =lapply(list(Molecular_Function=compareGoMf,Biological_Process=compareGoBp,Cellular_Compartment = compareGoCc,KEGG_Term = compareKegg),as.data.frame)
 GO = do.call('rbind',GOList)
 GO$Category = ss(rownames(GO),'\\.')
+GO$core_enrichment = getSymbol(GO$core_enrichment,outGene)
+
 save(GO,compareKegg,compareGoMf,compareGoBp,compareGoCc, file = "rdas/gene_sets_tcf4_mouse.rda")
 WriteXLS(GO,ExcelFileName = "tables/gene_sets_tcf4_mouse.xls")
 

@@ -26,6 +26,10 @@ load("tcf4_mouse/rdas/mega_dataset_DE_objects_DESeq2.rda") #mouse data
 outGene$hsapien_homolog = MMtoHG$hsapiens_homolog_ensembl_gene[match(rownames(outGene),MMtoHG$ensembl_gene_id)]
 outGene = outGene[grepl('ENSG',outGene$hsapien_homolog),] #take only genes w/ human homolog
 
+#####################################################
+# get ORs and and p-values for concordance enrichment
+pmouse = c(0,.05); phuman = c(0,.05); qtype = c('Adj','Qual'); region = c('ba9','ba41_42_22','vermis')
+
 # no enforcement mice or human
 genes = outGene
 genes$mouseFCsign = paste0(sign(genes$log2FoldChange),'_mm')
