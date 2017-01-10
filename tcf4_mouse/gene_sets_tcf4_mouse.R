@@ -12,28 +12,38 @@ library(WriteXLS)
 library(clusterProfiler)
 library(org.Mm.eg.db)
 
-load("rdas/mouse_tcf4_DE_objects_DESeq2.rda")
+#load("rdas/mouse_tcf4_DE_objects_DESeq2.rda")
+load('rdas/mouse_tcf4_ages_DE_objects_DESeq2.rda')
 
 #########################
 # define background genes
-univ = outGene$EntrezID
+#univ = outGene$EntrezID
+univ = unlist(lapply(outGeneList,'[[','EntrezID'))
 univ = as.character(unique(univ[!is.na(univ)]))
 
 ######################################
 # make list of genes, exons, junctions
-sigStats = outGene[outGene$pvalue < 0.01,c("log2FoldChange", "EntrezID")]
-sigStats = sigStats[!is.na(sigStats$EntrezID),]
-sigStats$EntrezID = as.character(sigStats$EntrezID)
-length(sigStats$EntrezID)
+#sigStats = outGene[outGene$pvalue < 0.01,c("log2FoldChange", "EntrezID")]
+#sigStats = sigStats[!is.na(gList),]
+#gList = as.character(gList)
+#length(gList)
+sigList = lapply(outGeneList,function(outGene) outGene[outGene$pvalue < 0.01,c("log2FoldChange", "EntrezID")])
+gList = endoapply(lapply(sigList,'[[','EntrezID'),function(x) as.character(x[!is.na(x)]))
+sapply(gList, length)
 
 ##################################
 # find GO and KEGG term enrichment
-compareKegg = enrichKEGG(sigStats$EntrezID, universe = univ,organism = "mmu", qvalueCutoff = 0.05,pvalueCutoff = 0.1)
-compareGoMf = enrichGO(sigStats$EntrezID, universe = univ, ont = "MF",OrgDb=org.Mm.eg.db, qvalueCutoff = 0.05, pvalueCutoff = 0.1, readable = TRUE)
-compareGoBp = enrichGO(sigStats$EntrezID, universe = univ, ont = "BP",OrgDb=org.Mm.eg.db, qvalueCutoff = 0.05, pvalueCutoff = 0.1, readable = TRUE)
-compareGoCc = enrichGO(sigStats$EntrezID, universe = univ, ont = "CC",OrgDb=org.Mm.eg.db, qvalueCutoff = 0.05, pvalueCutoff = 0.1, readable = TRUE)
-compareGo = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareGoCc = compareGoCc),simplify)
+#compareKegg = enrichKEGG(gList, universe = univ,organism = "mmu", qvalueCutoff = 0.05,pvalueCutoff = 0.1)
+#compareGoMf = enrichGO(gList, universe = univ, ont = "MF",OrgDb=org.Mm.eg.db, qvalueCutoff = 0.05, pvalueCutoff = 0.1, readable = TRUE)
+#compareGoBp = enrichGO(gList, universe = univ, ont = "BP",OrgDb=org.Mm.eg.db, qvalueCutoff = 0.05, pvalueCutoff = 0.1, readable = TRUE)
+#compareGoCc = enrichGO(gList, universe = univ, ont = "CC",OrgDb=org.Mm.eg.db, qvalueCutoff = 0.05, pvalueCutoff = 0.1, readable = TRUE)
+#compareGo = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareGoCc = compareGoCc),simplify)
 
+compareKegg = compareCluster(gList, fun ='enrichKEGG', universe = univ,organism = "mmu", qvalueCutoff = 0.05,pvalueCutoff = 0.1)
+compareGoMf = compareCluster(gList, fun ='enrichGO', universe = univ, ont = "MF",OrgDb=org.Mm.eg.db, qvalueCutoff = 0.05, pvalueCutoff = 0.1, readable = TRUE)
+compareGoBp = compareCluster(gList, fun ='enrichGO', universe = univ, ont = "BP",OrgDb=org.Mm.eg.db, qvalueCutoff = 0.05, pvalueCutoff = 0.1, readable = TRUE)
+compareGoCc =compareCluster(gList, fun ='enrichGO', universe = univ, ont = "CC",OrgDb=org.Mm.eg.db, qvalueCutoff = 0.05, pvalueCutoff = 0.1, readable = TRUE)
+compareGo = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareGoCc = compareGoCc),simplify)
 ############
 # make plots
 #pdf("plots/gene_sets_tcf4_mouse.pdf")
@@ -45,10 +55,8 @@ compareGo = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareG
 
 ######
 # save
-save(compareKegg, compareGo, file = "rdas/gene_sets_tcf4_mouse.rda")
-WriteXLS(lapply(c(compareGo,compareKegg=compareKegg), as.data.frame),ExcelFileName = "tables/gene_sets_tcf4_mouse.xls")
-rm(list = ls())
-
+save(compareKegg, compareGo, file = "rdas/gene_sets_tcf4_mouse_ages.rda")
+WriteXLS(lapply(c(compareGo,compareKegg=compareKegg), as.data.frame),ExcelFileName = "tables/gene_sets_tcf4_mouse_ages.xls")
 
 ######################################
 # make genelist of Log2FC, name is EntrezID, order decreasing

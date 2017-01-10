@@ -1,7 +1,7 @@
 ### Brady's pths mouse differential expression analysis using DESeq2
 # qsub -V -l mf=200G,h_vmem=250G,h_stack=256M -cwd -b y R CMD BATCH analyze_tcf4_mouse_DESeq2.R
 source('../DESeq2_functions.R') #work-horse of differential expression
-
+library(jaffelab)
 ##############################################
 # load phenotype data and RPKM expression data
 load('./rdas/pheno.rda',envir = dat<-new.env())
@@ -61,6 +61,39 @@ dev.off()
 # save everything
 library(WriteXLS)
 WriteXLS(sigGeneList, ExcelFileName = 'tables/mouse_tcf4_ages_DE_table_DESeq2.xls',row.names=T)
-save(outGene,file = 'rdas/mouse_tcf4_ages_DE_objects_DESeq2.rda')
+save(sigGeneList,outGeneList,file = 'rdas/mouse_tcf4_ages_DE_objects_DESeq2.rda')
 save(geneDds, file = '/dcl01/lieber/ajaffe/Brady/mouseRNAseq/mouse_tcf4_ages_DESeq2_svaAdj.rda')
 
+#################
+# plot logfoldchange
+library(ggplot2)
+library(reshape2)
+load('rdas/mouse_tcf4_ages_DE_objects_DESeq2.rda')
+# p1 genes
+tmp = sigGeneList[[1]]
+labs = rownames(tmp)[tmp$padj < 0.05 & !is.na(tmp$padj)]
+labs = labs[which(labs %in% Reduce(intersect,lapply(outGeneList,rownames)))]
+outGene = do.call('rbind',outGeneList)
+outGene$Age = ss(rownames(outGene),'\\.')
+outGene$Ensembl = ss(rownames(outGene),'\\.',2)
+sigGene = outGene[outGene$Ensembl %in% labs,]
+
+dat = dcast(Ensembl~Age,data = sigGene,value.var = 'log2FoldChange')
+pairs(dat[,c('p1','p21','Adult')],main= 'P1 LogFC at P21/Adult')
+
+# p21 genes
+tmp = sigGeneList[[2]]
+labs = rownames(tmp)[tmp$padj < 0.05 & !is.na(tmp$padj)]
+labs = labs[which(labs %in% Reduce(intersect,lapply(outGeneList,rownames)))]
+sigGene = outGene[outGene$Ensembl %in% labs,]
+dat = dcast(Ensembl~Age,data = sigGene,value.var = 'log2FoldChange')
+pairs(dat[,c('p1','p21','Adult')],main= 'P21 LogFC at P1/Adult')
+
+library(gplots)
+pdf('plots/venn_ages_maher_tcf4_mouse.pdf')
+plot(venn(lapply(outGeneList,function(g) rownames(g)[which(g$padj<.05 & !is.na(g$padj))]),
+          small = 2,show.plot =F),cex=2,font = 2)
+#geneVenn = venn(lapply(outGeneList,function(g) rownames(g)[which(g$pvalue<.01)]))
+dev.off()
+
+write.table(geneCounts,sep = '\t',quote = FALSE,file = 'tables/rawGeneCounts_tcf4_mouse.txt')

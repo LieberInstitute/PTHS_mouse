@@ -16,13 +16,33 @@ indList = split(seq(nrow(pd)), pd$Region)
 
 pd$Diagnosis = factor(pd$Diagnosis, levels = c("CTL", "ASD"))
 
+#########################
+# quality control metrics
+library(beeswarm)
+par(mar = c(2,5,3,2))
+pdf('plots/asd_qc_plots.pdf')
+boxplot(pd$totalAssignedGene~pd$Diagnosis+pd$Region,xaxt ='n',
+        main = 'Gene Assignment Rate',ylab= 'Gene Assignment Rate')
+axis(side = 1, at = 1:3*2-.5,labels = levels(factor(pd$Region)))
+beeswarm(pd$totalAssignedGene~pd$Diagnosis+pd$Region,
+         add = T,pch = 21,pwbg = pd$Diagnosis)
+legend('topright',legend = c('CTL','ASD'),pch =21, pt.bg = 1:2)
+
+boxplot(pd$mitoRate~pd$Diagnosis+pd$Region,xaxt ='n',
+        main = 'Mito Rate', ylab = 'Mito Rate')
+axis(side = 1, at = 1:3*2-.5,labels = levels(factor(pd$Region)))
+beeswarm(pd$mitoRate~pd$Diagnosis+pd$Region,
+         add = T,pch = 21,pwbg = pd$Diagnosis)
+legend('topright',legend = c('CTL','ASD'),pch =21, pt.bg = 1:2)
+dev.off()
+
 ##############################
 # create and run DESeq objects
 geneDdsListAdj <-lapply(indList,function(i){ 
   DESeq2(countData = geneCounts[,i], colData = pd[i,], 
          design = ~Diagnosis + totalAssignedGene +
            Sequencing.Batch + Brain.Bank + RIN + Age + Sex,
-         sva = FALSE,parallel=TRUE)})
+         sva = TRUE,parallel=TRUE)})
 
 ################################################################
 # get DE results, and fold-change homozygous mutant v. wild-type
@@ -30,13 +50,15 @@ resGene <- lapply(geneDdsListAdj,function(g) results(g,contrast = c('Diagnosis',
 
 sapply(resGene,function(g) sum(g$padj < 0.05, na.rm=TRUE))
 
-outGeneList <- lapply(resGene,function(g) as.data.frame(g))
-labs = Reduce(intersect,lapply(outGeneList,rownames))
-outGene = do.call('cbind',lapply(outGeneList, function(g) g[labs,]))
-outGene = cbind(outGene,geneMap[rownames(outGene),])
-sigGene = outGene[apply(outGene[,grep('pvalue',names(outGene))],1,function(x) any(x<0.01)),]
-sigGene = outGene[order(apply(sigGene[,grep('pvalue',names(sigGene))],1,mean)),]
+outGeneList <- lapply(resGene,function(g) {
+  outGene <- as.data.frame(g)
+  outGene = outGene[order(outGene$padj,outGene$pvalue),]
+  outGene = cbind(outGene,geneMap[rownames(outGene),])
+})
 
+sigGeneList = lapply(outGeneList,function(g){
+  sigGene = g[which(g$pvalue<.01),]
+})
 
 pdf('plots/DESeq2_MA_plots_asd.pdf')
 plotMA(resGene[[1]], main="ba41-42-22 Gene MA plot", ylim=c(-2,2))
@@ -47,7 +69,7 @@ dev.off()
 #################
 # save everything
 library(WriteXLS)
-WriteXLS(list(Gene = sigGene,pd), ExcelFileName = 'tables/asd_DE_table_DESeq2.xls',row.names=T)
-save(outGene, file = 'rdas/asd_DE_objects_DESeq2.rda')
-save(geneDdsListAdj, file = '/dcl01/lieber/ajaffe/Brady/asd/asd_DESeq2.rda')
-cat(rownames(pd),file = '/dcl01/lieber/ajaffe/Brady/asd/samples.txt',sep = '\n')
+WriteXLS(sigGeneList, ExcelFileName = 'tables/asd_DE_table_DESeq2.xls',row.names=T)
+save(outGeneList, file = 'rdas/asd_DE_objects_DESeq2.rda')
+save(geneDdsListAdj, file = '/dcl01/lieber/ajaffe/Brady/asd/asd_DESeq2_Adj.rda')
+#cat(rownames(pd),file = '/dcl01/lieber/ajaffe/Brady/asd/samples.txt',sep = '\n')

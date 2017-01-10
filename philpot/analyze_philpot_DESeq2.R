@@ -8,65 +8,46 @@ load('./rdas/pheno.rda',envir = dat<-new.env())
 load('/dcl01/lieber/ajaffe/Brady/philpot/rawCounts_philpot_OCT20_n58.rda')
 pd = cbind(dat$pd,pd)
 all(seq(nrow(pd))==unlist(sapply(pd$SAMPLE_ID,grep,pd$'BGI file name'))) #samples line up
-rownames(pd) = pd$'File rename/Unique identifier'
-
-##########################
-# conform to DESeq2 data types
-jCounts = as.matrix(as.data.frame(jCounts))
-jIndex=which(jMap$code != "Novel")
-jCounts = jCounts[jIndex,]
-jMap = jMap[jIndex]
-colnames(jCounts) = pd$SAMPLE_ID
 rownames(pd) = pd$SAMPLE_ID
+
+##############
+# split by age
+indList = split(seq(nrow(pd)), pd$Age)
 
 ##############################
 # create and run DESeq objects
-geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype+Age,sva = TRUE,parallel=TRUE)
-rm(geneCounts); gc()
-exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype+Age,sva = TRUE,parallel=TRUE)
-rm(exonCounts); gc()
-jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype+Age,sva = TRUE,parallel=TRUE)
-rm(jCounts); gc()
+geneDds <- lapply(indList,function(i) {
+  tmp = pd[i,]
+  tmp$Genotype = droplevels(tmp$Genotype)
+  DESeq2(countData = geneCounts[,i], colData = tmp, 
+         design = ~Genotype,sva = TRUE,parallel=TRUE)})
 
-############################################################
-# get DE results, and fold-change of each het mouse genotype
-outGene = data.frame(row.names = rownames(geneDds),geneMap[rownames(geneDds),])
-outExon = data.frame(row.names = rownames(exonDds),exonMap[rownames(exonDds),])
-outJxn = data.frame(row.names = rownames(jxnDds),as.data.frame(jMap)[rownames(jxnDds),])
+############################################
+# get DE results, and fold-change PTHS v. WT
+resGene <- lapply(c('P1','Adult'),function(a){ 
+  g = geneDds[[a]]
+  lines = unique(colData(g)$Line)
+  tmp =lapply(lines,function(l) results(g,contrast = c('Genotype',l,'WT'), alpha=0.05))
+  names(tmp) = paste0(a,'.',lines)
+  tmp})
+resGene = unlist(resGene)
 
-for (i in seq(2,5)) {
-  het = levels(pd$Genotype)[i]
-  resGene <- results(geneDds,contrast = c('Genotype',het,'WT'),alpha=0.05) 
-  resExon <- results(exonDds,contrast =  c('Genotype',het,'WT'),alpha=0.05) 
-  resJxn <- results(jxnDds,contrast =  c('Genotype',het,'WT'),alpha=0.05) 
-  
-  g <- as.data.frame(resGene); names(g) = paste0(names(g),'_',het)
-  e <- as.data.frame(resExon); names(e) = paste0(names(e),'_',het)
-  j <- as.data.frame(resJxn); names(j) = paste0(names(j),'_',het)
-  
-  outGene = cbind(outGene,g)
-  outExon = cbind(outExon,e)
-  outJxn = cbind(outJxn,j)
-}
-sapply(outGene[,paste0("padj_",c(levels(pd$Geno)[2:5])),],function(x)sum(x<.05,na.rm = T))
-sapply(outExon[,paste0("padj_",c(levels(pd$Geno)[2:5])),],function(x)sum(x<.05,na.rm = T))
-sapply(outJxn[,paste0("padj_",c(levels(pd$Geno)[2:5])),],function(x)sum(x<.05,na.rm = T))
+sapply(resGene,function(g) sum(g$padj < 0.05, na.rm=TRUE))
 
-outGene = outGene[order(apply(outGene[,paste0("pvalue_",c(levels(pd$Geno)[2:5])),],1,function(x) mean(log10(x)))),]
-sigGene = outGene[apply(outGene[,paste0("pvalue_",c(levels(pd$Geno)[2:5])),],1,function(x) any(x < 0.01)),]
+outGeneList <- lapply(resGene,function(g) {
+  outGene <- as.data.frame(g)
+  outGene = outGene[order(outGene$padj,outGene$pvalue),]
+  outGene = cbind(outGene,geneMap[rownames(outGene),])
+})
 
-outExon = outExon[order(apply(outExon[,paste0("pvalue_",c(levels(pd$Geno)[2:5])),],1,function(x) mean(log10(x)))),]
-sigExon = outExon[apply(outExon[,paste0("pvalue_",c(levels(pd$Geno)[2:5])),],1,function(x) any(x < 0.01)),]
-
-outJxn = outJxn[order(apply(outJxn[,paste0("pvalue_",c(levels(pd$Geno)[2:5])),],1,function(x) mean(log10(x)))),]
-sigJxn = outJxn[apply(outJxn[,paste0("pvalue_",c(levels(pd$Geno)[2:5])),],1,function(x) any(x < 0.01)),]
+sigGeneList = lapply(outGeneList,function(g){
+  sigGene = g[which(g$pvalue<.01),]
+})
 
 #######################################
 # save all the differential expressions
 library(WriteXLS)
-WriteXLS(list(Gene = sigGene,Exon= sigExon, Junction = sigJxn, phenotype = pd),
-         ExcelFileName = 'tables/philpot_DE_table.xls')
-save(pd, outGene, outExon, outJxn, file="rdas/philpot_DE_objects_DESeq2.rda")
-save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/philpot/philpot_DESeq2_svaAdj.rda')
-
+WriteXLS(sigGeneList, ExcelFileName = 'tables/philpot_DE_table_ages.xls')
+save(pd, outGeneList, file="rdas/philpot_DE_by_age_objects_DESeq2.rda")
+save(geneDds,file = '/dcl01/lieber/ajaffe/Brady/philpot/philpot_by_age_DESeq2_svaAdj.rda')
 
