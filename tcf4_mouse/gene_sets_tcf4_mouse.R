@@ -8,12 +8,67 @@ getSymbol = function(entrezList, geneMap){
   })
 }
 library(jaffelab)
+library(ReactomePA)
 library(WriteXLS)
 library(clusterProfiler)
 library(org.Mm.eg.db)
 
 #load("rdas/mouse_tcf4_DE_objects_DESeq2.rda")
 load('rdas/mouse_tcf4_ages_DE_objects_DESeq2.rda')
+
+######################################
+# make genelist of Log2FC, name is EntrezID, order decreasing
+GSEList = lapply(outGeneList,function(outGene){
+  ord = order(outGene$log2FoldChange,decreasing = T)
+  sigStats = outGene$log2FoldChange[ord]
+  names(sigStats) = as.character(outGene$EntrezID[ord])
+  
+  ##################################
+  # find GO and KEGG term enrichment
+  compareKegg = gseKEGG(sigStats, organism = "mmu", nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+  compareReactome = gsePathway(sigStats, organism = "mouse", nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+  #compareMKegg = gseMKEGG(sigStats, organism = "mmu", nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+  compareGoMf = gseGO(sigStats, ont = "MF",OrgDb=org.Mm.eg.db,  nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+  compareGoBp = gseGO(sigStats, ont = "BP",OrgDb=org.Mm.eg.db,  nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+  compareGoCc = gseGO(sigStats, ont = "CC",OrgDb=org.Mm.eg.db,  nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
+  
+  ######
+  # save
+  GOList =lapply(list(Molecular_Function=compareGoMf,
+                      Biological_Process=compareGoBp,
+                      Cellular_Compartment = compareGoCc,
+                      KEGG_Term = compareKegg,
+                      Reactome = compareReactome),as.data.frame)
+
+  GO = do.call('rbind',GOList)
+  GO$Category = ss(rownames(GO),'\\.')
+  GO$core_enrichment = getSymbol(GO$core_enrichment,outGene)
+  return(GO)
+})
+save(GSEList, file = "rdas/gene_sets_tcf4_mouse_ages.rda")
+WriteXLS(GSEList,ExcelFileName = "tables/gene_sets_tcf4_mouse_ages.xls")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #########################
 # define background genes
@@ -57,28 +112,4 @@ compareGo = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareG
 # save
 save(compareKegg, compareGo, file = "rdas/gene_sets_tcf4_mouse_ages.rda")
 WriteXLS(lapply(c(compareGo,compareKegg=compareKegg), as.data.frame),ExcelFileName = "tables/gene_sets_tcf4_mouse_ages.xls")
-
-######################################
-# make genelist of Log2FC, name is EntrezID, order decreasing
-ord = order(outGene$log2FoldChange,decreasing = T)
-sigStats = outGene$log2FoldChange[ord]
-names(sigStats) = as.character(outGene$EntrezID[ord])
-
-##################################
-# find GO and KEGG term enrichment
-compareKegg = gseKEGG(sigStats, organism = "mmu", nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
-compareGoMf = gseGO(sigStats, ont = "MF",OrgDb=org.Mm.eg.db,  nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
-compareGoBp = gseGO(sigStats, ont = "BP",OrgDb=org.Mm.eg.db,  nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
-compareGoCc = gseGO(sigStats, ont = "CC",OrgDb=org.Mm.eg.db,  nPerm = 1000, minGSSize    = 120,pvalueCutoff = 0.05)
-
-
-######
-# save
-GOList =lapply(list(Molecular_Function=compareGoMf,Biological_Process=compareGoBp,Cellular_Compartment = compareGoCc,KEGG_Term = compareKegg),as.data.frame)
-GO = do.call('rbind',GOList)
-GO$Category = ss(rownames(GO),'\\.')
-GO$core_enrichment = getSymbol(GO$core_enrichment,outGene)
-
-save(GO,compareKegg,compareGoMf,compareGoBp,compareGoCc, file = "rdas/gene_sets_tcf4_mouse.rda")
-WriteXLS(GO,ExcelFileName = "tables/gene_sets_tcf4_mouse.xls")
 

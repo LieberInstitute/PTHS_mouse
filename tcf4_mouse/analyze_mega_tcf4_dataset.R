@@ -17,6 +17,7 @@ pd = pd[ind,]
 geneCounts = geneCounts[,ind]
 pd$Age[pd$Age=='P1'] = 'p1'
 pd$Age = droplevels(pd$Age)
+with(pd,table(Age,Line))
 
 #####################
 # split by age groups
@@ -53,7 +54,7 @@ dev.off()
 # save everything
 library(WriteXLS)
 WriteXLS(sigGeneList, ExcelFileName = 'tables/mega_tcf4_ages_DE_table_DESeq2.xls',row.names=T)
-save(outGeneList,file = 'rdas/mega_tcf4_ages_DE_objects_DESeq2.rda')
+save(sigGeneList,outGeneList,file = 'rdas/mega_tcf4_ages_DE_objects_DESeq2.rda')
 save(geneDds, file = '/dcl01/lieber/ajaffe/Brady/mouseRNAseq/mega_tcf4_ages_DESeq2_svaAdj.rda')
 
 #################
@@ -100,3 +101,11 @@ names(adult) = paste0(names(adult),'_Adult')
 sigGeneList[['Both']]= cbind(genes,p1,adult)
 
 WriteXLS(sigGeneList, ExcelFileName = 'tables/mega_tcf4_ages_DE_table_DESeq2.xls',row.names=T)
+
+
+################################
+# overlap of DEGs at P1 and Adult
+labs =  Reduce(intersect,lapply(outGeneList,rownames))
+tmp = sapply(outGeneList,function(x) with(x[labs,],padj<0.05 & !is.na(padj)))
+(tt = table(P1 = tmp[, 1],Adult = tmp[, 2]))
+fisher.test(tt)
