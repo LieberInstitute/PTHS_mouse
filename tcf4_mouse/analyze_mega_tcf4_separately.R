@@ -66,10 +66,6 @@ geneVenn = plot(venn(lapply(outGeneList[indP1],function(g) rownames(g)[which(g$p
 geneVenn = plot(venn(lapply(outGeneList[indAdult[-6]],function(g) rownames(g)[which(g$pvalue<.01 & !is.na(g$padj))]),small =1.5,show.plot = F),cex = 2)
 dev.off()
 
-## unique genes
-p1Genes = unique(unlist(lapply(outGeneList[indP1],function(g) rownames(g)[which(g$padj<.05 & !is.na(g$padj))])))
-adultGenes = unique(unlist(lapply(outGeneList[indAdult],function(g) rownames(g)[which(g$padj<.05 & !is.na(g$padj))])))
-
 #############################
 ## replication rate by model
 sapply(indP1,function(i) {
@@ -88,5 +84,44 @@ sapply(indAdult,function(i) {
 
 #Act.Adult    Del.Adult  Maher.Adult   Nest.Adult  R579W.Adult Sweatt.Adult 
 #70           86           47          57          81           29      
+
+#######################
+## replication heat map
+library(Heatplus)
+library(jaffelab)
+library(RColorBrewer)
+
+
+#########################################################
+# plot replication p1 gene heat maps, in 2 of 6 models
+p1Genes = unique(unlist(lapply(outGeneList[indP1],function(g) rownames(g)[which(g$padj<.05 & !is.na(g$padj))])))
+p1Genes = p1Genes[sapply(p1Genes,function(g) sum(sapply(indP1,function(i) g %in% rownames(sigGeneList[[i]]))))>1]
+p1Dat = do.call('cbind',lapply(outGeneList[indP1], function(g) g[p1Genes,c('log2FoldChange')]))
+p1Dat[is.na(p1Dat)] = 0
+colnames(p1Dat) = ss(colnames(p1Dat),'\\.')
+
+pdf('plots/replication_heatmap_mega_tcf4_p1.pdf',height = 4,width = 4)
+pheatmap(p1Dat,colorRampPalette(brewer.pal(n = 11, name ="PiYG"))(length(seq(-.6,.6,0.1))),
+                    border_color = NA,ylab = 'Log2 Fold-change',legend = F,
+         labels_row = outGeneList[[1]][p1Genes,'Symbol'],breaks = seq(-.6,.6,0.1))
+dev.off()
+
+
+#########################################################
+# plot replication adult gene heat maps, in 4 of 6 models
+adultGenes = unique(unlist(lapply(outGeneList[indAdult],function(g) rownames(g)[which(g$padj<.05 & !is.na(g$padj))])))
+adultGenes = adultGenes[sapply(adultGenes,function(g) sum(sapply(indAdult,function(i) g %in% rownames(sigGeneList[[i]]))))>4]
+adultDat = do.call('cbind',lapply(outGeneList[indAdult], function(g) g[adultGenes,c('log2FoldChange')]))
+adultDat[is.na(adultDat)] = 0
+colnames(adultDat) = ss(colnames(adultDat),'\\.')
+maxFC = max(abs(adultDat))+.01
+
+pdf('plots/replication_heatmap_mega_tcf4_adult.pdf',height = 6,width = 4)
+pheatmap(adultDat,colorRampPalette(brewer.pal(n = 11, name ="PiYG"))(length(seq(-maxFC,maxFC,0.1))),
+         legend = F,breaks = length(seq(-maxFC,maxFC,0.1)),
+         border_color = NA,ylab = 'Log2 Fold-change',labels_row = outGeneList[[1]][adultGenes,'Symbol'])
+dev.off()
+
+
 
 
