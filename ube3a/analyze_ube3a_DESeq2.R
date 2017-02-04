@@ -8,56 +8,46 @@ load('./rdas/pheno.rda',envir = dat<-new.env())
 load('/dcl01/lieber/ajaffe/Brady/ube3a/rawCounts_ube3a_nov17_n8.rda')
 pd = cbind(dat$pd,pd)
 all(seq(nrow(pd))==unlist(sapply(pd$SAMPLE_ID,grep,pd$'BGI file name'))) #samples line up
-rownames(pd) = pd$'File rename/Unique identifier'
-
-##########################
-# conform to DESeq2 data types
-jCounts = as.matrix(as.data.frame(jCounts))
-jIndex=which(jMap$code != "Novel")
-jCounts = jCounts[jIndex,]
-jMap = jMap[jIndex]
-colnames(jCounts) = pd$SAMPLE_ID
 rownames(pd) = pd$SAMPLE_ID
+
+#####################
+# split by age groups
+indList = split(seq(nrow(pd)), pd$Age)
+names(indList)
 
 ##############################
 # create and run DESeq objects
-geneDds <- DESeq2(countData = geneCounts, colData = pd, design = ~Genotype+Age+totalAssignedGene,sva = TRUE,parallel=TRUE)
-exonDds <- DESeq2(countData = exonCounts, colData = pd, design = ~Genotype+Age+totalAssignedGene,sva = TRUE,parallel=TRUE)
-jxnDds <- DESeq2(countData = jCounts, colData = pd, design = ~Genotype+Age+totalAssignedGene,sva = TRUE,parallel=TRUE)
+geneDds <- lapply(indList,function(i) {
+  DESeq2(countData = geneCounts[,i], colData = pd[i,], 
+         design = ~Case,sva = FALSE,parallel=TRUE)})
 
 ############################################################
 # get DE results, and fold-change of each het mouse genotype
-resGene <- results(geneDds,contrast = c('Genotype','Ube3am-/p+','Ube3a+/+'),alpha=0.05) 
-resExon <- results(exonDds,contrast = c('Genotype','Ube3am-/p+','Ube3a+/+'),alpha=0.05) 
-resJxn <- results(jxnDds,contrast = c('Genotype','Ube3am-/p+','Ube3a+/+'),alpha=0.05) 
+resGene <-lapply(geneDds,function(g) results(g,contrast = c('Case','Mutant','Control'), alpha=0.05))
 
-sum(resGene$padj < 0.05, na.rm=TRUE)
-sum(resExon$padj < 0.05, na.rm=TRUE)
-sum(resJxn$padj < 0.05, na.rm=TRUE)
+sapply(resGene,function(g) sum(g$padj < 0.05, na.rm=TRUE))
+# P1 Adult 
+# 18    30
 
-outGene <- as.data.frame(resGene[order(resGene$padj,resGene$pvalue),])
-outGene = cbind(outGene,geneMap[rownames(outGene),])
-sigGene = outGene[which(outGene$pvalue<.01),]
+outGeneList <- lapply(resGene,function(g) {
+  outGene <- as.data.frame(g)
+  outGene = outGene[order(outGene$padj,outGene$pvalue),]
+  outGene = cbind(outGene,geneMap[rownames(outGene),])
+})
 
-outExon <- as.data.frame(resExon[order(resExon$padj,resExon$pvalue),])
-outExon = cbind(outExon,exonMap[rownames(outExon),])
-sigExon = outExon[which(outExon$pvalue<.01),]
+sigGeneList = lapply(outGeneList,function(g){
+  sigGene = g[which(g$pvalue<.01),]
+})
 
-outJxn <- as.data.frame(resJxn[order(resJxn$padj,resJxn$pvalue),])
-outJxn = cbind(outJxn, as.data.frame(jMap)[rownames(outJxn),])
-sigJxn = outJxn[which(outJxn$pvalue<.01),]
-
-pdf('plots/DESeq2_MA_plots_ube3a.pdf')
-plotMA(resGene, main="Gene MA plot", ylim=c(-2,2))
-plotMA(resExon, main="Exon MA plot",  ylim=c(-4,4))
-plotMA(resJxn, main="Junction MA plot",  ylim=c(-4,4))
+pdf('plots/DESeq2_MA_plots_ube3a_ages.pdf')
+plotMA(resGene[['P1']], main="Ube3a P14 MA plot", ylim=c(-1,1))
+plotMA(resGene[['Adult']], main="Ube3a Adult MA plot", ylim=c(-1,1))
 dev.off()
 
 #######################################
 # save all the differential expressions
 library(WriteXLS)
-WriteXLS(list(Gene = sigGene,Exon = sigExon, Junction = sigJxn, phenotype = pd),
-         ExcelFileName = 'tables/ube3a_DE_table.xls')
-save(pd, outGene,outExon,outJxn, file="rdas/ube3a_DE_objects_DESeq2.rda")
-save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/ube3a/ube3a_DESeq2_svaAdj.rda')
+WriteXLS(sigGeneList,ExcelFileName = 'tables/ube3a_DE_ages_table.xls')
+save(sigGeneList,outGeneList, file="rdas/ube3a_DE_ages_objects_DESeq2.rda")
+save(geneDds,resGene, file = '/dcl01/lieber/ajaffe/Brady/ube3a/ube3a_ages_DESeq2_svaAdj.rda')
 
