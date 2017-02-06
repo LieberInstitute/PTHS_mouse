@@ -9,6 +9,7 @@ library(gplots)
 library(clusterProfiler)
 library(ReactomePA)
 library(org.Mm.eg.db)
+library(RColorBrewer)
 
 library("scales")
 reverselog_trans <- function(base = exp(1)) {
@@ -49,8 +50,7 @@ dev.off()
 
 #########################
 # overlap of marginal DEG
-sigGenes = Reduce('intersect',lapply(bigOutGeneList,function(g) rownames(g)[which(g$pvalue<.01)]))
-# cat(geneMap[sigGenes,'Symbol'])
+sigGenes = Reduce('intersect',lapply(bigOutGeneList,function(g) rownames(g)[which(g$padj<.05 & !is.na(g$padj))]))
 entrezID = as.character(geneMap[sigGenes,'EntrezID'])
 univ = as.character(geneMap[labs,'EntrezID'])
 GoMF = enrichGO(entrezID,ont = "MF", universe = univ, 
@@ -67,17 +67,18 @@ dat = do.call('rbind',lapply(list(Biological_Process = GoBP,
                                   Cellular_Component = GoCC),
                              as.data.frame))
 dat$Type = ss(as.character(rownames(dat)),'\\.')
-WriteXLS::WriteXLS(dat,'tcf4_mouse/tables/overlap_mecp2_pten_tcf4.pdf')
-dat = subset(dat,p.adjust < 0.01)
 dat$GeneRatio = as.numeric(ss(dat$GeneRatio,'/'))/as.numeric(ss(dat$GeneRatio,'/',2))
-pdf('tcf4_mouse/plots/overlap_gene_sets.pdf',height = 4,width = 6)
-ggplot(data = dat,
-       aes(fill = GeneRatio,x = factor(dat$Description,
-       levels = dat$Description[order(dat$pvalue,decreasing = T)]),
+dat$Description = factor(dat$Description,
+           levels = dat$Description[order(dat$p.adjust,decreasing = T)])
+WriteXLS::WriteXLS(dat,'tcf4_mouse/tables/overlap_mecp2_pten_tcf4.pdf')
+#dat = subset(dat,p.adjust < 0.01)
+pdf('tcf4_mouse/plots/overlap_gene_sets.pdf',height = 2.5,width = 5)
+ggplot(data = dat, aes(fill = GeneRatio,x = Description,
         y = p.adjust)) + geom_bar(stat="identity")+
   coord_flip()+ylab('Adjusted P-value')+xlab('Gene Ontology')+
   scale_y_continuous(trans=reverselog_trans(10))+
-  geom_hline(yintercept = 0.05,color = 'red',linetype = 2)
+  geom_hline(yintercept = 0.05,color = 'red',linetype = 2)+
+  scale_fill_gradient(low ="lightgray", high = "black")
 dev.off()
 
 
@@ -119,26 +120,25 @@ plot(tpLog2FC[,2],tpLog2FC[,1],ylab = 'Tcf4 log2 Fold-change',xlab = 'Pten log2 
 
 #####################################
 # plot log2fc TCF4 vs. PTEN and MECP2
-dat = data.frame(rbind(tmLog2FC,tpLog2FC),row.names = NULL)
-names(dat) = c('Tcf4','Other')
-dat$Mutation =rep(c('Mecp2','Pten'),times = sapply(list(tmLog2FC,tpLog2FC),nrow))
+sig = Reduce('intersect',lapply(bigOutGeneList,function(g) rownames(g)[which(g$padj<0.05 & !is.na(g$padj))]))
+apply(tmLog2FC,2,range)
+apply(tpLog2FC,2,range)
 
-
-postscript('tcf4_mouse/plots/asd_mice_compare_logFC.eps',height = 3.5,width = 4)
-ggplot(data = data.frame(tmLog2FC),aes(x = Tcf4,y = Mecp2))+
+postscript('tcf4_mouse/plots/asd_mice_compare_logFC.eps',height = 3.5,width = 4.5)
+ggplot(data = data.frame(tmLog2FC),aes(y = Tcf4,x = Mecp2,colour =  rownames(tmLog2FC) %in% sig))+
   geom_point(fill = '#00cd00',pch = 21) + ggtitle('')+ 
-  xlab('Tcf4 log2 Fold-Change') + ylab('Mecp2 log2 Fold-Change')+
+  ylab('Tcf4 log2 Fold-Change') + xlab('Mecp2 log2 Fold-Change')+
   geom_vline(xintercept = 0,colour= 'red',linetype = 'dashed') + 
   geom_hline(yintercept = 0,colour= 'red',linetype = 'dashed') +
-  ylim(c(-.5,.5))+xlim(c(-.4,.4))+
+  scale_color_manual(values = c('FALSE'='#00cd00','TRUE'='black'))+
   theme(strip.background = element_rect(fill = "white", colour = "white"),
         legend.position="none")
-ggplot(data = data.frame(tpLog2FC),aes(x = Tcf4,y = Pten))+
+ggplot(data = data.frame(tpLog2FC),aes(y = Tcf4,x = Pten,colour =  rownames(tpLog2FC) %in% sig))+
   geom_point(fill = '#0080ff',pch =21) + ggtitle('')+ 
-  xlab('Tcf4 log2 Fold-Change') + ylab('Pten log2 Fold-Change')+
+  ylab('Tcf4 log2 Fold-Change') + xlab('Pten log2 Fold-Change')+
   geom_vline(xintercept = 0,colour= 'red',linetype = 'dashed') + 
   geom_hline(yintercept = 0,colour= 'red',linetype = 'dashed') +
-  ylim(c(-.5,.5))+xlim(c(-.4,.4))+
+  scale_color_manual(values = c('FALSE'='#0080ff','TRUE'='black'))+
   theme(strip.background = element_rect(fill = "white", colour = "white"),
         legend.position="none")
 dev.off()
