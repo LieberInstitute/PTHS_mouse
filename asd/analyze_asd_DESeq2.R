@@ -10,11 +10,20 @@ pd = cbind(pd,dat$pd)
 all.equal(pd$SampleID,pd$SAMPLE_ID) #samples line up
 rownames(pd) = pd$SAMPLE_ID
 
+
+
+pd$Diagnosis = factor(pd$Diagnosis, levels = c("CTL", "ASD"))
+
+
+
+
+
+
+
+
 ########################
 # split by brain regions
 indList = split(seq(nrow(pd)), pd$Region)
-
-pd$Diagnosis = factor(pd$Diagnosis, levels = c("CTL", "ASD"))
 
 #########################
 # quality control metrics
