@@ -87,7 +87,7 @@ sapply(indAdult,function(i) {
 
 #######################
 ## replication heat map
-library(Heatplus)
+library(pheatmap)
 library(jaffelab)
 library(RColorBrewer)
 
