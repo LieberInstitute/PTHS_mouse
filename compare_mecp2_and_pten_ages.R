@@ -26,6 +26,7 @@ options(stringsAsFactors = F)
 # load TCF4, MECP2, and PTEN mice data
 load('tcf4_mouse/rdas/mega_tcf4_ages_DE_objects_DESeq2.rda',envir = tcf4 <- new.env())
 load('mecp2/rdas/mecp2_DE_objects_DESeq2.rda',envir = mecp2 <- new.env())
+load('mef2c/rdas/mef2c_DE_objects_DESeq2.rda',envir = mef2c <- new.env())
 load('pten/rdas/pten_ages_DE_objects_DESeq2.rda',envir = pten <- new.env())
 
 #########################
@@ -70,7 +71,7 @@ dat$Type = ss(as.character(rownames(dat)),'\\.')
 dat$GeneRatio = as.numeric(ss(dat$GeneRatio,'/'))/as.numeric(ss(dat$GeneRatio,'/',2))
 dat$Description = factor(dat$Description,
            levels = dat$Description[order(dat$p.adjust,decreasing = T)])
-WriteXLS::WriteXLS(dat,'tcf4_mouse/tables/overlap_mecp2_pten_tcf4.pdf')
+WriteXLS::WriteXLS(list(GO = dat,Genes = geneMap[sigGenes,]),'tcf4_mouse/tables/overlap_mecp2_pten_tcf4.xls')
 #dat = subset(dat,p.adjust < 0.01)
 pdf('tcf4_mouse/plots/overlap_gene_sets.pdf',height = 2.5,width = 5)
 ggplot(data = dat, aes(fill = GeneRatio,x = Description,
@@ -91,11 +92,12 @@ tmLog2FC = tmLog2FC[apply(tmPval<0.05 &!is.na(tmPval),1,all),]
 
 # test for negative enrichment = 
 (t1 = with(data.frame(tmPval),table(Tcf4 = Tcf4<0.05 & !is.na(Tcf4),Mecp2 = Mecp2<0.05 & !is.na(Mecp2))))
-chisq.test(t1)
+fisher.test(t1)
+getOR(t1)
 
 (t2 = with(data.frame(tmLog2FC),table(Tcf4 = sign(Tcf4) ,Mecp2 = sign(Mecp2))))
-getOR(t1)
 1-getKappa(t2)
+with(data.frame(tmLog2FC),cor.test(Tcf4,Mecp2,method = 'spearman'))
 with(data.frame(tmLog2FC),cor.test(x = Tcf4,y = Mecp2,method = 'spearman'))
 plot(tmLog2FC[,2],tmLog2FC[,1],ylab = 'Tcf4 log2 Fold-change',xlab = 'Mecp2 log2 Fold-change',
      xlim = c(-.6,.6),ylim = c(-.5,.5))
@@ -110,10 +112,12 @@ tpLog2FC = tpLog2FC[apply(tpPval<0.05 &!is.na(tpPval),1,all),]
 # test for negative enrichment = 
 (t1 = with(data.frame(tpPval),table(Tcf4 = Tcf4<0.05 & !is.na(Tcf4),
                                     Pten = Pten<0.05 & !is.na(Pten))))
-chisq.test(t1)
+fisher.test(t1)
 getOR(t1)
 (t2 = with(data.frame(tpLog2FC),table(Tcf4 = sign(Tcf4) ,Pten = sign(Pten))))
 1-getKappa(t2)
+with(data.frame(tpLog2FC),cor.test(Tcf4,Pten,method = 'spearman'))
+
 with(data.frame(tpLog2FC),cor.test(x = Tcf4,y = Pten,method = 'spearman'))
 plot(tpLog2FC[,2],tpLog2FC[,1],ylab = 'Tcf4 log2 Fold-change',xlab = 'Pten log2 Fold-change',
      xlim = c(-1.2,1.2),ylim = c(-.6,.6))

@@ -54,14 +54,14 @@ nrow(mouseSFARI) # 186 expressed in mouse tcf4 dataset
 # list of DEG in mouse SFARI
 # 53 genes differentially expressed and in SFARI 
 (t1 = with(outGene,table(inMouseSFARI = Symbol %in% mouseSFARI$Symbol,inDEG = padj < 0.05)))
-chisq.test(t1) # X-squared = 49.47, df = 1, p-value = 2.014e-12
+fisher.test(t1) # OR = 3.081588, p-value = 4.253e-10
 ind1 = with(sigGene, which(mouseSFARI$Symbol %in% Symbol))
 
 #######################################
 # list of DEG in scored human SFARI list
 # 131 human SFARI ASD-linked genes in our list of DEGs
 (t2 = with(outGene,table(inHumanSFARI = Symbol %in% humanSFARI$Symbol,inDEG = padj < 0.05)))
-chisq.test(t2) # X-squared = 66.841, df = 1, p-value = 2.944e-16
+fisher.test(t2) # OR = 2.291039, p-value = 6.36e-14
 ind2 = with(sigGene, which(humanSFARI$Symbol %in% Symbol))
 
 ####################

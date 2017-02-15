@@ -24,7 +24,8 @@ geneDds <- lapply(indList,function(i) {
 
 ############################################
 # get DE results, and fold-change PTHS v. WT
-resGene <- c(lapply(geneDds,function(g) results(g,contrast = c('Genotype','Pten wt/m3m4','Pten wt/wt'), alpha=0.05)),lapply(geneDds,function(g) results(g,contrast = c('Genotype','Pten m3m4/m3m4','Pten wt/wt'), alpha=0.05)))
+resGene <- c(lapply(geneDds,results,contrast = c('Genotype','Pten wt/m3m4','Pten wt/wt'), alpha=0.05),
+             lapply(geneDds,results,contrast = c('Genotype','Pten m3m4/m3m4','Pten wt/wt'), alpha=0.05))
 
 names(resGene) = paste0(names(resGene),'.',rep(c('Het','Mut'),each =2))
 sapply(resGene,function(g) sum(g$padj < 0.05, na.rm=TRUE))

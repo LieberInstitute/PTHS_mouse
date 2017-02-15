@@ -16,46 +16,58 @@ MMtoHG = getBM(attributes = c('ensembl_gene_id','hsapiens_homolog_ensembl_gene')
 
 #########################################
 #load human data, 'out' is the data frame
-load('asd/rdas/asd_DE_objects_DESeq2.rda',envir = asd <- new.env())
-out = asd$outGene
-rownames(out) = out$ensemblID
+load('asd/rdas/asd_DE_objects_DESeq2_Adj.rda',envir = asd <- new.env())
+out = do.call('cbind',lapply(asd$outGeneList,function(g) 
+  g[Reduce('intersect',lapply(asd$outGeneList,rownames)),]))
+tmp = ss(Reduce('intersect',lapply(asd$outGeneList,rownames)),'\\.')
+out = out[!duplicated(tmp),]
+rownames(out) = tmp[!duplicated(tmp)]
 indFC = grep('log2FoldChange',names(out),value = T)
 indPval = grep('pvalue',names(out),value = T)
 
 ############################################
 # check mouse tcf4 DEGs w/ psych encode data
-load("tcf4_mouse/rdas/mega_dataset_DE_objects_DESeq2.rda") #mouse data
-outGene$hsapien_homolog = MMtoHG$hsapiens_homolog_ensembl_gene[match(rownames(outGene),MMtoHG$ensembl_gene_id)]
-outGene = outGene[grepl('ENSG',outGene$hsapien_homolog),] #take only genes w/ human homolog
+load("tcf4_mouse/rdas/mega_tcf4_ages_DE_objects_DESeq2.rda") #mouse data
+outGeneList = lapply(outGeneList, function(g) {
+  g$hsapien_homolog = MMtoHG$hsapiens_homolog_ensembl_gene[match(rownames(g),MMtoHG$ensembl_gene_id)]
+  g[grepl('ENSG',g$hsapien_homolog),]})
+outGene = outGeneList[['Adult']]
+#take only genes w/ human homolog
 
 #####################################################
 # get ORs and and p-values for concordance enrichment
-pmouse = c(0,.05); phuman = c(0,.05); qtype = c('Adj','Qual'); region = c('ba9','ba41_42_22','vermis')
+for (n in names(outGeneList)){
+  g = outGeneList[[n]]; print(n)
+  lapply(indPval,function(n){ #enrichment of DEG
+    print(n)
+    (tt = table(Human = out[g$hsapien_homolog,n] < 0.05,Mouse = g$padj< 0.05))
+    print(getOR(tt))
+    fisher.test(tt)
+  })
+  
+  # no enforcement mice or human
+  g$mouseFCsign = paste0(sign(g$log2FoldChange),'_mm')
+  outFCrep = sign(out[g$hsapien_homolog,indFC])
+  lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],g$mouseFCsign)))
+  sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],g$mouseFCsign)[1:3])
 
-# no enforcement mice or human
-genes = outGene
-genes$mouseFCsign = paste0(sign(genes$log2FoldChange),'_mm')
-outFCrep = sign(out[genes$hsapien_homolog,indFC])
-lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],genes$mouseFCsign)))
-sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],genes$mouseFCsign)[1:3])
-
-# human pval < 0.05
-outFCrep[out[genes$hsapien_homolog,indPval] > 0.05] = NA
-lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],genes$mouseFCsign)))
-sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],genes$mouseFCsign)[1:3])
-
-# mice padjusted < 0.05
-genes = outGene[outGene$padj<0.05 & !is.na(outGene$padj),]
-#genes = genes[order(genes$fdr_sva),]
-genes$mouseFCsign = paste0(sign(genes$log2FoldChange),'_mm')
-outFCrep = sign(out[genes$hsapien_homolog,indFC])
-lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],genes$mouseFCsign)))
-sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],genes$mouseFCsign)[1:3])
-
-# human pval < 0.05, and mice padjust < 0.05
-outFCrep[out[genes$hsapien_homolog,indPval] > 0.05] = NA
-lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],genes$mouseFCsign)))
-sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],genes$mouseFCsign)[1:3])
+  # human pval < 0.05
+  outFCrep[out[g$hsapien_homolog,indPval] > 0.05] = NA
+  lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],g$mouseFCsign)))
+  sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],g$mouseFCsign)[1:3])
+  
+  # mice padjusted < 0.05
+  g = g[g$padj<0.05 & !is.na(g$padj),]
+  g$mouseFCsign = paste0(sign(g$log2FoldChange),'_mm')
+  outFCrep = sign(out[g$hsapien_homolog,indFC])
+  lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],g$mouseFCsign)))
+  sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],g$mouseFCsign)[1:3])
+  
+  # human pval < 0.05, and mice padjust < 0.05
+  outFCrep[out[g$hsapien_homolog,indPval] > 0.05] = NA
+  lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],g$mouseFCsign)))
+  sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],g$mouseFCsign)[1:3])
+}
 
 ##########################################
 # save table of replicated human ASD genes
@@ -70,23 +82,36 @@ outList = lapply(seq(length(indFC)),function(x){
   ret = ret[order(apply(log(ret[,c('padj',indPval[x])]),1,mean,na.rm = T)),]
   return(ret)
 })
-names(outList) = ss(indFC,'\\.')
-type=c("BA 41,42,22", "BA 9","Vermis")
+names(outList) = names(asd$outGeneList)
+type=names(asd$outGeneList)
 dat = rbindlist(outList)
 names(dat) = c("Symbol", "log2FoldChange_mouse", "padj_mouse", "hsapien_homolog", "log2FoldChange_human", 
                "pvalue_human", "sameFCsign")
 dat$type = rep(paste0(type,' (N=',sapply(outList,nrow),')'),times = sapply(outList,nrow))
-#WriteXLS(dat,ExcelFileName = 'tables/stable7_psychENCODE_human_asd_replication.xls')
+dat$region = ss(dat$type,'_')
+dat$case = ss(dat$type,'_',2)
+dat$adj = ss(dat$type,'_',3)
+#WriteXLS(dat,ExcelFileName = 'tcf4_mouse/tables/psychENCODE_human_asd_replication.xls')
 
 #####################################
 # plot human asd FC v tcf4 mouse
-pdf('tcf4_mouse/plots/fig6b_human_asd_psychENCODE_fc.pdf',w = 9.5,h = 4)
-ggplot(data=dat,aes(x=log2FoldChange_mouse, y=log2FoldChange_human, fill=type)) +
-  geom_point(aes(x=log2FoldChange_mouse, y=log2FoldChange_human, fill=type),pch=21)+
-  theme_bw(base_size = 14, base_family = "Helvetica")  + facet_wrap(~type,nrow =1,shrink=T) + 
+pdf('tcf4_mouse/plots/human_asd_psychENCODE_fc.pdf',w = 12,h = 10)
+ggplot(data=subset(dat,case =='ASD'),aes(x=log2FoldChange_mouse, y=log2FoldChange_human, fill=region)) +
+  geom_point(alpha = .6,pch=21)+facet_wrap(adj~region,ncol =3,shrink=T) + 
+  theme_bw(base_size = 14, base_family = "Helvetica")  + 
   xlab("Mouse log2 fold-change") + ylab('Human log2 fold change') +
-  geom_vline(aes(xintercept = 0,colour= 'red',linetype = 'dashed')) + 
-  geom_hline(aes(yintercept = 0,colour= 'red',linetype = 'dashed'))+ 
+  geom_vline(xintercept = 0,colour= 'red',linetype = 'dashed') + 
+  geom_hline(yintercept = 0,colour= 'red',linetype = 'dashed')+ 
+  theme(strip.background = element_rect(fill = "white", colour = "white"),
+        axis.title = element_text(family="Helvetica", face="bold", size=14),
+        axis.text = element_text(family="Helvetica", face="bold", size=12),
+        legend.position="none")
+ggplot(data=subset(dat,case =='Dup15'),aes(x=log2FoldChange_mouse, y=log2FoldChange_human, fill=region)) +
+  geom_point(alpha = .6,pch=21)+facet_wrap(adj~region,ncol =3,shrink=T) + 
+  theme_bw(base_size = 14, base_family = "Helvetica")  + 
+  xlab("Mouse log2 fold-change") + ylab('Human log2 fold change') +
+  geom_vline(xintercept = 0,colour= 'red',linetype = 'dashed') + 
+  geom_hline(yintercept = 0,colour= 'red',linetype = 'dashed') + 
   theme(strip.background = element_rect(fill = "white", colour = "white"),
         axis.title = element_text(family="Helvetica", face="bold", size=14),
         axis.text = element_text(family="Helvetica", face="bold", size=12),

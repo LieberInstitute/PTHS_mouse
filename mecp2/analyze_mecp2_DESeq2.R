@@ -58,3 +58,7 @@ library(WriteXLS)
 WriteXLS(list(Gene = sigGene,Exon = sigExon,Junction = sigJxn), ExcelFileName = 'tables/mecp2_DE_table_DESeq2.xls',row.names=T)
 save(outGene,outExon,outJxn,file = 'rdas/mecp2_DE_objects_DESeq2.rda')
 save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/mouseRNAseq/Rett/mecp2_DESeq2.rda')
+
+#################################
+# format data to run on CIBERSORT
+write.table(geneCounts,sep = '\t',quote = FALSE,file = 'tables/rawGeneCounts_mecp2.txt')

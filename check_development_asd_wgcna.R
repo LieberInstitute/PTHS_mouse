@@ -21,7 +21,9 @@ rownames(dat) = dat$"ENSEMBL.GENE.ID"
 
 ############################
 # load mega TCF4 DEG dataset
-load("tcf4_mouse/rdas/mega_dataset_DE_objects_DESeq2.rda") #mouse data
+load('tcf4_mouse/rdas/mega_tcf4_ages_DE_objects_DESeq2.rda')
+outGene = outGeneList[['Adult']]
+
 outGene$hsapien_homolog = MMtoHG$hsapiens_homolog_ensembl_gene[match(rownames(outGene),MMtoHG$ensembl_gene_id)]
 outGene = outGene[grepl('ENSG',outGene$hsapien_homolog),] #take only genes w/ human homolog
 outGene$module = dat[outGene$hsapien_homolog,c('Module.Label')]
@@ -39,8 +41,8 @@ sum(adj.pval<0.05)
 
 ############################
 # hold onto enriched modules
-modules[adj.pval<.05 & OR >1] #"M1"  "M2"  "M4"  "M13"
-tmp1 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Parikshak',Module = modules)
+modules[adj.pval<.05 & OR >1] #"M2" "M13"
+tmp1 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Parikshak2013',Module = modules)
 
 #################################################
 # load Voineagu huma ASD WGCNA supplementary data
@@ -63,7 +65,8 @@ rownames(dat) = dat$hg_ensembl
 
 ##################################
 # reload mouse data to start fresh
-load("tcf4_mouse/rdas/mega_dataset_DE_objects_DESeq2.rda") 
+load('tcf4_mouse/rdas/mega_tcf4_ages_DE_objects_DESeq2.rda')
+outGene = outGeneList[['Adult']]
 outGene$hsapien_homolog = MMtoHG$hsapiens_homolog_ensembl_gene[match(rownames(outGene),MMtoHG$ensembl_gene_id)]
 outGene = outGene[grepl('ENSG',outGene$hsapien_homolog),] #take only genes w/ human homolog
 outGene$module = dat[outGene$hsapien_homolog,c('Module.Label')]
@@ -90,7 +93,8 @@ rownames(dat) = dat$"EnsemblID"
 
 ##################################
 # reload mouse data to start fresh
-load("tcf4_mouse/rdas/mega_dataset_DE_objects_DESeq2.rda") 
+load('tcf4_mouse/rdas/mega_tcf4_ages_DE_objects_DESeq2.rda')
+outGene = outGeneList[['Adult']]
 outGene$hsapien_homolog = MMtoHG$hsapiens_homolog_ensembl_gene[match(rownames(outGene),MMtoHG$ensembl_gene_id)]
 outGene = outGene[grepl('ENSG',outGene$hsapien_homolog),] #take only genes w/ human homolog
 outGene$module = dat[outGene$hsapien_homolog,c('ModuleLabel')]
@@ -102,18 +106,19 @@ outGene$module = paste0('M',outGene$module)
 modules = unique(outGene$module)
 modules = modules[modules != '-']
 modules = modules[order(as.numeric(ss(modules,'M',2)))]
+modules = modules[modules != 'M11'] #non coexpressed module
 pval = sapply(modules,function(m) fisher.test(table(outGene$padj<.05,outGene$module==m))$p.value)
 OR = sapply(modules,function(m) fisher.test(table(outGene$padj<.05,outGene$module==m))$estimate)
 adj.pval = p.adjust(pval,'fdr')
 
 ####################
 # save Parikshak 2016 data
-tmp3 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Parikshak2017',Module = modules)
-modules[adj.pval<.05 & OR >1] #"M2"  "M14"
+tmp3 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Parikshak2016',Module = modules)
+modules[adj.pval<.05 & OR >1] #"M1"  "M3" "M16"
 
 ##########################################
 # combine module enrichment from both papers
-tmp = rbind(tmp1,tmp2)
+tmp = rbind(tmp2,tmp1,tmp3)
 m = as.character(unique(tmp$Module))
 tmp$Module = factor(tmp$Module, levels = m[order(as.numeric(ss(m,'M',2)))])
 #module 7 doesn't exist in Parikshak, filler values log10(p) = 0, OR = 1

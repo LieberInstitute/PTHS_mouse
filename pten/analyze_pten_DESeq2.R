@@ -62,3 +62,7 @@ WriteXLS(list(Gene = sigGene,Exon = sigExon,Junction = sigJxn), ExcelFileName = 
 save(outGene,outExon,outJxn,file = 'rdas/pten_DE_objects_DESeq2.rda')
 save(geneDds,exonDds,jxnDds, file = '/dcl01/lieber/ajaffe/Brady/mouseRNAseq/TilotPTEN/pten_DESeq2_svaAdj.rda')
 
+#################################
+# format data to run on CIBERSORT
+write.table(geneCounts,sep = '\t',quote = FALSE,file = 'tables/rawGeneCounts_pten.txt')
+
