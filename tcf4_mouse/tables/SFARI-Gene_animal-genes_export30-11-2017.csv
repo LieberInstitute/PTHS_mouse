@@ -1,0 +1,263 @@
+status,gene-symbol,gene-name,human-gene-score,human-syndromic,syntenic,model-species,number-of-models,has-rescue-model
+9,SLC6A3,"solute carrier family 6 member 3",3,0,No,"Mus musculus",14,1
+9,SLC6A3,"solute carrier family 6 member 3",3,0,No,"Rattus norvegicus",4,1
+9,UBA6,"ubiquitin-like modifier activating enzyme 6",5,0,No,"Mus musculus",1,0
+9,SHANK2,"SH3 and multiple ankyrin repeat domains 2",2,0,No,"Mus musculus",14,1
+9,DISC1,"Disrupted in schizophrenia 1",3,0,Unknown,"Mus musculus",11,0
+9,DISC1,"Disrupted in schizophrenia 1",3,0,Unknown,"Rattus norvegicus",2,0
+9,SLC6A4,"solute carrier family 6 member 4",4,0,Unknown,"Mus musculus",8,1
+9,SLC6A4,"solute carrier family 6 member 4",4,0,No,"Rattus norvegicus",3,0
+9,ATRNL1,"Attractin-like 1",5,0,Unknown,"Mus musculus",3,0
+9,DMPK,"dystrophia myotonica-protein kinase",S,1,Unknown,"Mus musculus",2,0
+9,GRIN1,"glutamate receptor, ionotropic, N-methyl D-aspartate 1",3,0,No,"Mus musculus",7,1
+9,IFNG,"Interferon gamma",5,0,No,"Mus musculus",3,1
+9,CAMK2A,"calcium/calmodulin dependent protein kinase II alpha",4,0,No,"Mus musculus",2,0
+9,RAPGEF4,"Rap guanine nucleotide exchange factor (GEF) 4",4,0,Unknown,"Mus musculus",1,0
+9,HCN1,"hyperpolarization activated cyclic nucleotide gated potassium channel 1",S,1,No,"Rattus norvegicus",4,1
+9,PTEN,"Phospatase and Tensin homolog",1,1,Unknown,"Mus musculus",21,1
+9,GAP43,"growth associated protein 43",5,0,Unknown,"Mus musculus",1,0
+9,KCNMA1,"potassium large conductance calcium-activated channel, subfamily M, alpha member 1",4,0,Yes,"Mus musculus",3,0
+9,GRM8,"glutamate receptor, metabotropic 8",6,0,Unknown,"Mus musculus",1,0
+9,KCNQ2,"potassium voltage-gated channel, KQT-like subfamily, member 2",3,0,Unknown,"Mus musculus",1,0
+9,NTNG1,"Netrin G1",4,1,Unknown,"Mus musculus",1,0
+9,RPS6KA3,"ribosomal protein S6 kinase, 90kDa, polypeptide 3",4,1,No,"Mus musculus",1,0
+9,WDFY3,"WD repeat and FYVE domain containing 3",2,0,Unknown,"Mus musculus",4,0
+9,GADD45B,"growth arrest and DNA-damage-inducible, beta",5,0,No,"Mus musculus",1,0
+9,GADD45B,"growth arrest and DNA-damage-inducible, beta",5,0,No,"Rattus norvegicus",1,0
+9,SYN3,"Syanpsin III",5,0,No,"Mus musculus",1,0
+9,CACNA1C,"calcium channel, voltage-dependent, L type, alpha 1C subunit",S,1,Unknown,"Mus musculus",6,0
+9,DEAF1,"DEAF1, transcription factor",2,1,Yes,"Mus musculus",9,0
+9,IL1RAPL1,"interleukin 1 receptor accessory protein-like 1",4,0,Unknown,"Mus musculus",2,0
+9,PARK2,"Parkinson disease (autosomal recessive, juvenile) 2, parkin",3,0,Unknown,"Mus musculus",1,0
+9,TSC2,"tuberous sclerosis 2",S,1,Unknown,"Mus musculus",15,1
+9,TSC2,"tuberous sclerosis 2",S,1,Unknown,"Rattus norvegicus",3,1
+9,GRID2,"glutamate receptor, ionotropic, delta 2",4,0,No,"Mus musculus",2,0
+9,MECP2,"methyl-CpG binding protein 2",2,1,Unknown,"Mus musculus",62,1
+9,MECP2,"methyl-CpG binding protein 2",2,1,Unknown,"Rattus norvegicus",3,0
+9,OPRM1,"opioid receptor, mu 1",5,0,Yes,"Mus musculus",3,1
+9,APBA2,"amyloid beta (A4) precursor protein-binding, family A, member 2",4,0,Unknown,"Mus musculus",2,0
+9,CADPS2,"Ca2+-dependent activator protein for secretion 2",4,0,Yes,"Mus musculus",5,0
+9,ATP1A3,"Sodium potassium ATPase alpha 3 subunit",S,1,Unknown,"Mus musculus",2,1
+9,HTR3A,"5-hydroxytryptamine (serotonin) receptor 3A",4,0,Unknown,"Mus musculus",3,0
+9,CUL3,"cullin 3",1,0,No,"Mus musculus",4,0
+9,CTNNB1,"catenin (cadherin associated protein), beta 1",3,0,Yes,"Mus musculus",1,0
+9,PGLYRP2,"peptidoglycan recognition protein 2",5,0,No,"Mus musculus",1,0
+9,OPHN1,"Oligophrenin 1",3,0,Unknown,"Mus musculus",1,0
+9,CXCR3,"chemokine (C-X-C motif) receptor 3",5,0,Unknown,"Mus musculus",1,0
+9,RAI1,"retinoic acid induced 1",S,1,Unknown,"Mus musculus",2,0
+9,ANKRD11,"ankyrin repeat domain 11",2,1,Unknown,"Mus musculus",3,0
+9,FOLH1,"folate hydrolase (prostate-specific membrane antigen) 1",5,0,Yes,"Mus musculus",3,1
+9,ITGB3,"integrin, beta 3 (platelet glycoprotein IIIa, antigen CD61)",3,0,Unknown,"Mus musculus",2,0
+9,PRICKLE1,"prickle homolog 1 (Drosophila)",3,0,No,"Mus musculus",5,0
+9,NLGN4X,"neuroligin 4, X-linked",3,0,Unknown,"Mus musculus",3,0
+9,PRICKLE2,"prickle homolog 2 (Drosophila)",3,0,No,"Mus musculus",2,0
+9,TPH2,"Tryptophan hydroxylase 2",6,0,No,"Mus musculus",3,0
+9,NRP2,"neuropilin 2",4,0,Unknown,"Mus musculus",4,0
+9,PCDH19,"protocadherin 19",S,1,No,"Mus musculus",4,0
+9,GLRA2,"glycine receptor, alpha 2",5,0,Unknown,"Mus musculus",1,0
+9,ANK2,"ankyrin 2, neuronal",1,0,No,"Mus musculus",2,0
+9,MBD3,"methyl-CpG binding domain protein 3",4,0,Unknown,"Mus musculus",1,0
+9,SCN1A,"sodium channel, voltage-gated, type I, alpha subunit",3,1,Unknown,"Mus musculus",18,1
+9,SCN1A,"sodium channel, voltage-gated, type I, alpha subunit",3,1,Unknown,"Rattus norvegicus",2,1
+9,SLC1A2,"solute carrier family 1 (glial high affinity glutamate transporter), member 2",S,1,No,"Mus musculus",8,1
+9,AVPR1A,"Arginine vasopressin receptor 1A",3,0,Unknown,"Mus musculus",2,0
+9,IMMP2L,"IMP2 inner mitochondrial membrane peptidase-like",5,0,Unknown,"Mus musculus",2,0
+9,DAB1,"Disabled homolog 1",5,0,Unknown,"Mus musculus",1,0
+9,DAB1,"Disabled homolog 1",5,0,Unknown,"Rattus norvegicus",1,0
+9,SLC25A12,"solute carrier family 25 (Mitochondrial carrier, Aralar), member 12",4,0,Unknown,"Mus musculus",4,0
+9,CLSTN3,"calsyntenin 3",5,0,No,"Mus musculus",1,0
+9,RELN,Reelin,1,0,Unknown,"Mus musculus",9,1
+9,DYRK1A,"dual specificity tyrosine-Y- phosphorylation regulated kinase 1A",1,1,No,"Mus musculus",3,0
+9,SCN2A,"sodium channel, voltage-gated, type II, alpha subunit",1,0,Unknown,"Mus musculus",3,0
+9,EXT1,"exostosin 1",4,0,No,"Mus musculus",1,0
+9,HOMER1,"homer scaffolding protein 1",4,0,No,"Mus musculus",4,0
+9,HOMER1,"homer scaffolding protein 1",4,0,No,"Rattus norvegicus",2,0
+9,PAFAH1B1,"platelet-activating factor acetylhydrolase 1b, regulatory subunit 1",5,0,No,"Mus musculus",2,0
+9,TERT,"Telomerase reverse transcriptase",5,0,No,"Mus musculus",2,1
+9,ARID1B,"AT-rich interaction domain 1B",1,1,No,"Mus musculus",7,1
+9,NRXN2,Neurexin2,4,0,No,"Mus musculus",3,0
+9,NRXN1,"Neurexin 1",2,0,Unknown,"Mus musculus",2,0
+9,NRXN1,"Neurexin 1",2,0,Unknown,"Rattus norvegicus",2,1
+9,ALDH5A1,"Aldehyde Dehydrogenase 5 family, member A1",S,1,Unknown,"Mus musculus",4,1
+9,FOXP2,"Forkhead box P2",3,0,Unknown,"Mus musculus",9,0
+9,FOXP1,"Forkhead box P1",2,1,Unknown,"Mus musculus",6,0
+9,ADNP,"Activity-dependent neuroprotector homeobox",1,1,No,"Mus musculus",8,1
+9,BCKDK,"branched chain ketoacid dehydrogenase kinase",2,0,No,"Mus musculus",3,1
+9,BCKDK,"branched chain ketoacid dehydrogenase kinase",2,0,No,"Rattus norvegicus",1,0
+9,ADORA2A,"Adenosine A2a receptor",4,0,Unknown,"Mus musculus",2,0
+9,USP7,"Ubiquitin specific peptidase 7",2,0,No,"Mus musculus",1,0
+9,EN2,"Engrailed homeobox 2",4,0,Unknown,"Mus musculus",5,0
+9,PCDH10,"protocadherin 10",4,0,Unknown,"Mus musculus",3,1
+9,OXT,"oxytocin/neurophysin I prepropeptide [Homo sapiens (human)",4,0,Yes,"Mus musculus",7,1
+9,EIF4E,"Eukaryotic translation initiation factor 4E",4,0,Yes,"Mus musculus",2,1
+9,TCF4,"transcription factor 4",S,1,No,"Mus musculus",3,1
+9,TCF4,"transcription factor 4",S,1,No,"Rattus norvegicus",4,1
+9,SEMA5A,"Sema domain, seven thrombospondin repeats (type 1 and type 1-like), transmembrane domain (TM) and short cytoplasmic domain, (semaphorin) 5A",3,0,Unknown,"Mus musculus",1,0
+9,MEF2C,"Myocyte Enhancer Factor 2C",4,1,Unknown,"Mus musculus",6,0
+9,MAOA,"Monoamine Oxidase A",4,0,Unknown,"Mus musculus",3,0
+9,HDAC3,"Histone deacetylase 3",5,0,Yes,"Mus musculus",1,0
+9,HDAC4,"Histone deacetylase 4",S,1,Unknown,"Mus musculus",2,0
+9,AHI1,"Abelson helper integration site 1",S,1,Unknown,"Mus musculus",3,0
+9,PRKDC,"Protein kinase, DNA activated, catalytic peptide",4,0,No,"Mus musculus",2,1
+9,GABRA5,"Gamma-aminobutyric acid (GABA) A receptor, subunit alpha 5",5,0,Yes,"Mus musculus",1,0
+9,HMGN1,"High mobility group nucleosome binding domain 1",3,0,Unknown,"Mus musculus",2,0
+9,CDKL5,"cyclin-dependent kinase-like 5",S,1,No,"Mus musculus",2,0
+9,CADM1,"cell adhesion molecule 1",4,0,Unknown,"Mus musculus",4,0
+9,NLGN3,"neuroligin 3",2,0,Yes,"Mus musculus",28,1
+9,NLGN3,"neuroligin 3",2,0,Yes,"Rattus norvegicus",1,0
+9,NLGN1,"neuroligin 1",3,0,Unknown,"Mus musculus",10,0
+9,PTCHD1,"Patched domain containing 1",2,0,No,"Mus musculus",7,1
+9,GRIK2,"glutamate receptor, ionotropic, kainate 2",3,0,No,"Mus musculus",4,1
+9,GRIK4,"Glutamate receptor, ionotropic, kainate 4",5,0,No,"Mus musculus",8,1
+9,VLDLR,"very low density lipoprotein receptor",5,0,Unknown,"Rattus norvegicus",1,0
+9,HOXA1,"Homeobox A1",S,1,Unknown,"Mus musculus",3,0
+9,CRHR2,"Corticotropin releasing hormone receptor2",5,0,No,"Mus musculus",2,0
+9,PITX1,"paired-like homeodomain 1",4,0,Unknown,"Mus musculus",1,0
+9,DVL3,"Dishevelled segment polarity protein 3",4,0,No,"Mus musculus",5,1
+9,DVL1,"Dishevelled segment polarity protein 1",5,0,No,"Mus musculus",8,1
+9,PRKCB,"Protein Kinase C, beta",3,0,Unknown,"Mus musculus",1,0
+9,SPAST,Spastin,2,0,No,"Mus musculus",1,0
+9,ARHGAP32,"Rho GTPase activating protein 32",4,0,No,"Mus musculus",3,1
+9,ARHGAP33,"Rho GTPase activating protein 33",5,0,No,"Mus musculus",6,1
+9,HTR1B,"5-hydroxytryptamine (serotonin) receptor 1B",4,0,Unknown,"Mus musculus",2,0
+9,SLC6A1,"Solute carrier family 6 member 1",2,0,No,"Mus musculus",1,0
+9,CAPRIN1,"RNA granule protein 105 (Caprin 1)",3,0,Unknown,"Mus musculus",2,0
+9,PLN,Phospholamban,4,0,Unknown,"Mus musculus",1,0
+9,CACNA1H,"calcium channel, voltage-dependent, T type, alpha 1H subunit",2,0,Unknown,"Mus musculus",1,0
+9,TSC1,"Tuberous sclerosis 1",S,1,Unknown,"Mus musculus",17,1
+9,CACNA1F,"Calcium channel, voltage-dependent, L type, alpha 1F subunit",4,0,No,"Mus musculus",1,0
+9,CACNA1G,"Cav3.1 T-type Ca2+ Channel",4,0,Unknown,"Mus musculus",6,0
+9,NF1,"neurofibromin 1",S,1,Unknown,"Mus musculus",9,1
+9,ERBB4,"v-erb-a erythroblastic leukemia viral oncogene homolog 4 (avian)",5,0,Unknown,"Mus musculus",2,0
+9,PER1,"Period homolog 1",4,0,Unknown,"Mus musculus",1,0
+9,GTF2I,"general transcription factor Iii",4,0,Unknown,"Mus musculus",2,0
+9,MAGEL2,"MAGE like 2",2,1,No,"Mus musculus",1,0
+9,TOP3B,"Topoisomerase (DNA) 3 Beta",4,0,No,"Mus musculus",2,0
+9,DMD,Dystrophin,S,1,Unknown,"Mus musculus",6,0
+9,CC2D1A,"Coiled-coil and C2 domain containing 1A",3,0,No,"Mus musculus",5,0
+9,IFNGR1,"Interferon gamma receptor 1",5,0,No,"Mus musculus",1,0
+9,SLC9A6,"solute carrier family 9, subfamily A",S,1,No,"Mus musculus",3,0
+9,MET,"met Proto-oncogene",2,0,Unknown,"Mus musculus",8,0
+9,RBFOX1,"RNA binding protein, fox-1 homolog",3,0,Unknown,"Mus musculus",2,0
+9,ERBIN,"erbb2 interacting protein",2,0,No,"Mus musculus",2,0
+9,SLC6A8,"Solute carrier family 6 member 8",4,0,Yes,"Mus musculus",2,0
+9,PAX6,"paired box 6",S,1,No,"Rattus norvegicus",2,1
+9,EIF4EBP2,"eukaryotic translation initiation factor 4E binding protein 2",5,0,No,"Mus musculus",5,1
+9,SYN1,"Synapsin I",4,0,No,"Mus musculus",1,0
+9,SLC4A10,"Solute carrier 4, sodium bicarbonate transporter, member 10",4,0,Unknown,"Mus musculus",1,0
+9,TBX1,T-box1,4,0,Unknown,"Mus musculus",1,0
+9,CTNND2,"Catenin(cadherin associated protein), delta 2",2,0,Yes,"Mus musculus",1,0
+9,STAT1,"Signal transducer and activator of transcription 1",5,0,No,"Mus musculus",2,0
+9,CBLN1,"Cerebellin 1 precursor",5,0,No,"Mus musculus",7,0
+9,GABRB3,"gamma-aminobutyric acid (GABA) A receptor, beta 3",2,0,Unknown,"Mus musculus",17,1
+9,GSTM1,"Glutathione S-transferase mu 1",4,0,Unknown,"Mus musculus",1,0
+9,Slc30a3,"Solute carrier family 30 (zinc transporter), member 3",5,0,Yes,"Mus musculus",2,1
+9,JAKMIP1,"janus kinase and microtubule interacting protein 1",5,0,Yes,"Mus musculus",1,0
+9,FMR1,"Fragile X Mental Retardation 1",S,1,Unknown,"Mus musculus",41,1
+9,FMR1,"Fragile X Mental Retardation 1",S,1,Unknown,"Rattus norvegicus",1,0
+9,UCN3,"Urocortin 3",5,0,No,"Mus musculus",2,0
+9,NPAS2,"neuronal PAS domain protein 2",4,0,Unknown,"Mus musculus",1,0
+9,ATG7,"Autophagy related 7",5,0,No,"Mus musculus",2,1
+9,NRG1,"neuregulin 1",5,0,No,"Mus musculus",1,0
+9,DPP6,"dipeptidyl- petidase 6",4,0,No,"Mus musculus",1,0
+9,POU3F2,"POU class 3 homeobox 2",5,0,No,"Mus musculus",2,0
+9,KMT2A,"Lysine methyltransferase 2A",1,1,No,"Mus musculus",3,0
+9,ESRRB,"Estrogen-related receptor beta",4,0,Unknown,"Mus musculus",2,0
+9,STK39,"Serine threonine Kinase 39 (STE20/SPS1 homolog, yeast)",4,0,Unknown,"Mus musculus",1,0
+9,GRPR,"gastrin-releasing peptide receptor",5,0,Unknown,"Mus musculus",5,0
+9,FEZF2,"FEZ family zinc finger 2",4,0,Unknown,"Mus musculus",1,0
+9,ARX,"aristaless related homeobox",S,1,Unknown,"Mus musculus",4,0
+9,DRD3,"Dopamine receptor D3",4,0,Unknown,"Mus musculus",3,0
+9,SRRM4,"Serine/arginine repetitive matrix 4",5,0,Yes,"Mus musculus",2,0
+9,NRCAM,"Neural cell adhesion molecule",4,0,Unknown,"Mus musculus",1,0
+9,DHCR7,"7-dehydrocholesterol reductase",S,1,No,"Mus musculus",5,0
+9,LRFN2,"leucine rich repeat and fibronectin type III domain containing 2",4,0,No,"Mus musculus",2,0
+9,CSNK1D,"casein kinase 1, delta",6,0,No,"Mus musculus",3,0
+9,CACNA2D3,"calcium voltage-gated channel auxiliary subunit alpha2delta 3",2,0,Yes,"Mus musculus",2,0
+9,ATP2B2,"TPase, Ca++ transporting, plasma membrane 2",3,0,No,"Mus musculus",1,0
+9,BRINP1,"BMP/RA-inducible neural-specific protein 1",5,0,Unknown,"Mus musculus",3,1
+9,GSK3B,"glycogen synthase kinase 3 beta",5,0,Unknown,"Mus musculus",1,0
+9,GRIP1,"Glutamate receptor interacting protein 1",2,0,Unknown,"Mus musculus",3,0
+9,NR3C2,"nuclear receptor subfamily 3, group C, member 2",3,0,Unknown,"Mus musculus",2,0
+9,TBR1,"T-box, brain 1",1,0,No,"Mus musculus",9,1
+9,TRPC6,"Transient receptor potential cation channel, subfamily C, member 6",3,0,No,"Mus musculus",4,1
+9,CHD2,"chromodomain helicase DNA binding protein 2",2,1,No,"Mus musculus",2,0
+9,CHD5,"chromodomain helicase DNA binding protein 5",5,0,No,"Mus musculus",2,0
+9,CHD7,"chromodomain helicase DNA binding protein 7",S,1,No,"Mus musculus",4,1
+9,UBE3B,"ubiquitin protein ligase E3B",5,0,No,"Mus musculus",1,0
+9,CHD8,"chromodomain helicase DNA binding protein 8",1,1,No,"Mus musculus",15,1
+9,UBE3A,"ubiquitin protein ligase E3A",3,1,Unknown,"Mus musculus",30,1
+9,NBEA,neurobeachin,4,0,Unknown,"Mus musculus",2,0
+9,HTR2A,"5-hydroxytryptamine (serotonin) receptor 2A",5,0,Unknown,"Mus musculus",4,0
+9,APC,"adenomatous polyposis coli",5,0,No,"Mus musculus",2,0
+9,SYNGAP1,"synaptic Ras GTPase activating protein 1",1,1,Unknown,"Mus musculus",9,0
+9,AVP,"arginine vasopressin",5,0,No,"Rattus norvegicus",6,1
+9,BAIAP2,"BAI1-associated protein 2",5,0,Unknown,"Mus musculus",4,1
+9,MCPH1,"microcephalin 1",4,0,Unknown,"Mus musculus",2,0
+9,EPHA6,"EPH Receptor A6",5,0,Unknown,"Mus musculus",1,0
+9,GAD1,"glutamate decarboxylase 1 (brain, 67kDa)",5,0,No,"Mus musculus",1,0
+9,MAPK1,"mitogen-activated protein kinase 1",5,0,Unknown,"Mus musculus",1,0
+9,ASH1L,"ASH1 like histone lysine methyltransferase",1,0,No,"Mus musculus",6,1
+9,SLC7A5,"solute carrier family 7 member 5",3,0,No,"Mus musculus",2,1
+9,ATP8A1,"Aminophospholipid translocase, filppase, 8a1",5,0,Yes,"Mus musculus",2,0
+9,MAPK8IP2,"mitogen-activated protein kinase 8 interacting protein 2",5,0,Yes,"Mus musculus",1,0
+9,WWOX,"WW domain containing oxidoreductase",3,0,No,"Rattus norvegicus",1,0
+9,HDC,"histidine decarboxylase",5,0,No,"Mus musculus",20,1
+9,CIC,"capicua transcriptional repressor",2,1,Yes,"Mus musculus",8,1
+9,AUTS2,"Autism susceptibility candidate 2",3,0,No,"Mus musculus",2,0
+9,CNTN4,"contactin 4",2,0,Unknown,"Mus musculus",1,0
+9,FOXG1,"Forkhead Box G1",S,1,Unknown,"Mus musculus",1,0
+9,BCL11A,"B-cell CLL/lymphoma 11A",2,1,Yes,"Mus musculus",2,0
+9,SLC33A1,"Solute carrier family 33 member 1",5,0,Unknown,"Mus musculus",2,1
+9,CNTNAP2,"contactin associated protein-like 2",2,1,Unknown,"Mus musculus",26,1
+9,CNTNAP2,"contactin associated protein-like 2",2,1,Unknown,"Rattus norvegicus",1,0
+9,CNTNAP4,"contactin associated protein-like 4",3,0,No,"Mus musculus",7,1
+9,DSCAM,"Down syndrome cell adhesion molecule",1,0,No,"Mus musculus",11,0
+9,OXTR,"Oxytocin receptor",3,0,Unknown,"Mus musculus",13,1
+9,P2RX4,"purinergic receptor P2X, ligand-gated ion channel, 4",5,0,No,"Mus musculus",2,0
+9,MDGA2,"MAM domain containing glycosylphosphatidylinositol anchor 2",4,0,No,"Mus musculus",2,0
+9,TSHZ3,"Teashirt zinc finger homeobox 3",4,0,No,"Mus musculus",2,0
+9,SHANK3,"SH3 and multiple ankyrin repeat domains 3",1,1,Unknown,"Mus musculus",38,1
+9,SHANK3,"SH3 and multiple ankyrin repeat domains 3",1,1,Unknown,"Rattus norvegicus",4,1
+9,SHANK1,"SH3 and multiple ankyrin repeat domains 1",3,0,Unknown,"Mus musculus",2,0
+9,PVALB,Parvalbumin,5,0,No,"Mus musculus",3,0
+9,GRIN2B,"Glutamate receptor, ionotropic, N-methyl D-aspartate 2B",1,0,No,"Mus musculus",10,0
+9,DLG4,"discs, large homolog 4 (Drosophila)",,0,Unknown,"Mus musculus",1,0
+9,CELF4,"CUGBP, Elav-like family member 4",,0,No,"Mus musculus",7,0
+9,GRM5,"glutamate receptor, metabotropic 5",,0,No,"Mus musculus",12,0
+9,GRID1,"glutamate receptor, ionotropic, delta 1",,0,No,"Mus musculus",1,0
+9,EEF1A2,"eukaryotic translation elongation factor 1 alpha 2",,0,No,"Mus musculus",7,0
+9,EPS8,"epidermal growth factor receptor pathway substrate 8",,0,No,"Mus musculus",1,0
+9,SLITRK5,"SLIT and NTRK-like family, member 5",,0,No,"Mus musculus",2,0
+9,SCN8A,"sodium channel, voltage gated, type VIII, alpha subunit",,0,Unknown,"Mus musculus",1,0
+9,NLGN2,"neuroligin 2",,0,No,"Mus musculus",4,0
+9,NLGN2,"neuroligin 2",,0,No,"Rattus norvegicus",1,0
+9,PLAUR,"plasminogen activator, urokinase receptor",,0,Unknown,"Mus musculus",1,0
+9,APP,"amyloid beta (A4) precursor protein",,0,No,"Mus musculus",1,0
+9,TYR,"tyrosinase (oculocutaneous albinism IA)",,0,Unknown,"Mus musculus",1,0
+9,CELF6,"CUGBP, Elav-like family member 6",,0,No,"Mus musculus",1,0
+9,CD38,"CD38 molecule",,0,Unknown,"Mus musculus",1,0
+9,LRRC7,"Leucine rich repeat containing 7",,0,Unknown,"Mus musculus",1,0
+9,THRA,"thyroid hormone receptor, alpha (erythroblastic leukemia viral (v-erb-a) oncogene homolog, avian)",,0,Unknown,"Mus musculus",1,0
+9,ST8SIA2,"ST8 alpha-N-acetyl-neuraminide alpha-2,8-sialyltransferase 2",,0,Unknown,"Mus musculus",1,0
+9,CYFIP1,"Cytoplasmic FMR1 interacting protein 1",,0,No,"Mus musculus",1,0
+9,SYN2,"Synapsin II",,0,No,"Mus musculus",1,0
+9,DRD1,"Dopamine receptor D1",,0,No,"Mus musculus",2,0
+9,DRD1,"Dopamine receptor D1",,0,No,"Rattus norvegicus",1,0
+9,BDNF,"brain-derived neurotrophic factor",,0,No,"Mus musculus",1,0
+9,RASD1,"RAS, dexamethasone induced 1",,0,No,"Mus musculus",2,0
+9,CNTNAP1,"contactin associated protein 1",,0,Unknown,"Mus musculus",3,0
+9,CSNK1E,"casein kinase 1, epsilon",,0,No,"Mus musculus",1,0
+9,DRD4,"dopamine receptor D4",,0,Unknown,"Mus musculus",1,0
+9,GRIA2,"Glutamate receptor, ionotropic, AMPA 2",,0,Unknown,"Mus musculus",1,0
+9,GSC2,"goosecoid homeobox 2",,0,Unknown,"Mus musculus",1,0
+9,HOMER2,"homer homolog 2",,0,No,"Mus musculus",1,0
+9,HOMER3,"homer homolog 3",,0,No,"Mus musculus",1,0
+9,MBD2,"methyl-CpG binding domain protein 2",,0,Unknown,"Mus musculus",2,0
+9,NOS2,"Nitric Oxide Synthase 2, inducible",,0,Unknown,"Mus musculus",1,0
+9,NTNG2,"Netrin G2",,0,Unknown,"Mus musculus",1,0
+9,PIK3R6,"phosphoinositide-3-kinase, regulatory subunit 6",,0,Unknown,"Mus musculus",2,0
+9,RBFOX2,"RNA binding protein, fox-1 homolog",,0,Unknown,"Mus musculus",1,0
+9,RPS6KB1,"ribosomal protein S6 kinase, 70kDa, polypeptide 1",,0,No,"Mus musculus",1,0
+9,SLC16A8,"solute carrier family 16, member 8 (monocarboxylic acid transporter 3)",,0,No,"Mus musculus",1,0
+9,TRPV1,"transient receptor potential cation channel, subfamily V, member 1",,0,No,"Mus musculus",1,0
