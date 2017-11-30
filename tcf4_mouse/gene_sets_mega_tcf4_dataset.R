@@ -65,7 +65,7 @@ compareKegg = compareCluster(fun ='enrichKEGG',EntrezID ~ Age+Dir,data = sigStat
 compareGoMf = compareCluster(fun ='enrichGO',EntrezID ~ Age+Dir,data = sigStats, universe = univ, ont = "MF",OrgDb=org.Mm.eg.db, pvalueCutoff = 0.05, readable = TRUE)
 compareGoBp = compareCluster(fun ='enrichGO',EntrezID ~ Age+Dir,data = sigStats, universe = univ, ont = "BP",OrgDb=org.Mm.eg.db, pvalueCutoff = 0.05, readable = TRUE)
 compareGoCc = compareCluster(fun ='enrichGO',EntrezID ~ Age+Dir,data = sigStats, universe = univ, ont = "CC",OrgDb=org.Mm.eg.db,pvalueCutoff = 0.05, readable = TRUE)
-compareGo = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareGoCc = compareGoCc),dropGO,level = 1:2,term = )
+compareGo = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareGoCc = compareGoCc),dropGO,level = 1:2)
 
 ######
 # save

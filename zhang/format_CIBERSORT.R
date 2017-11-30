@@ -2,11 +2,12 @@
 library(DESeq2)
 library(beeswarm)
 library(jaffelab)
+library(ggplot2)
 
 ###############
 # load the data
 load('./rdas/pheno.rda',envir = dat <- new.env())
-load('/dcl01/lieber/ajaffe/Brady/zhang/rawCounts_zhang_nov1_n17.rda')
+load('/dcl01/lieber/ajaffe/Brady/zhang/rpkmCounts_zhang_nov1_n17.rda')
 pd = cbind(pd,dat$pd)
 table(pd$SAMPLE_ID==pd$SampleID)
 
@@ -17,18 +18,18 @@ pd$Cell = factor(pd$Cell,levels = c('<not provided>','endothelial cells','neuron
                                     'oligodendrocyte precursor cells',
                                     'newly formed oligodendrocytes','myelinating oligodendrocytes',
                                     'microglia'),
-                 labels = c('Cortex','Endothelial','Neuron','Astrocyte','Oligo_Pre',
-                            'Oligo_New','Oligo_Mye','Microglia'))
+                 labels = c('Cortex','Endothelial','Neuron','Astrocyte','Oligo.Pre',
+                            'Oligo.New','Oligo.Mye','Microglia'))
 
 ##########################
 # plot TCF4 expression in these cells
 ind = which(geneMap$Symbol =='Tcf4')
 
-pdf('plots/cell-specific_tcf4_expression.pdf',height = 4,width = 3)
-par(mar = c(6,2,2,1),cex.lab = 1 ,font = 2)
-beeswarm(geneRpkm[ind,]~pd$Cell, ylab = 'FPKM',xlab = '',pch = seq(length(levels(pd$Cell))),
-         main = 'Cell-specific Tcf4 Expression',las =2)
-#legend('topright',legend = levels(pd$Cell),pch = seq(length(levels(pd$Cell))),cex = .6)
+postscript('plots/cell-specific_tcf4_expression.eps',height = 2.5,width = 2.5)
+ggplot(data =cbind(rpkm = geneRpkm[ind,],pd),aes(x = Cell, y = rpkm,fill = Cell))+
+  geom_point(pch =21) +guides(FALSE) +theme(axis.text.x = element_text(angle = 30, hjust = 1))+
+  scale_fill_brewer(palette = 'Set1')+ylab('FPKM')+ylim(c(0,max(geneRpkm[ind,])))+
+  guides(fill = FALSE)
 dev.off()
 
 

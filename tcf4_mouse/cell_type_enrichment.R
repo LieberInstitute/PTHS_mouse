@@ -7,6 +7,7 @@ enrichCellType = function(genes,univ){
   fishtest$estimate = unlist(fishtest$estimate)
   fishtest$padj = p.adjust(fishtest$p.value,'fdr')
   fishtest$enriched = with(fishtest, padj< 0.05)
+  fishtest$percent = sapply(cell$cellSet,function(x) sum(genes %in% x)/length(x))
   return(fishtest)
 }
 
@@ -24,7 +25,7 @@ datList = lapply(lapply(outGeneList,function(g) rownames(g)[g$padj<0.05&!is.na(g
 # plot enrichment
 library(ggplot2)
 dat = do.call('rbind',datList)
-dat$estimate[!dat$enriched] = 1
+dat$percent[!dat$enriched] = 0
 dat$Line = factor(ss(rownames(dat),'\\.'),levels = 
                     c('R579W','Del','Nest','Act','Sweatt','Maher','Pooled'))
 dat$Age = factor(ss(rownames(dat),'\\.',2),levels = c('p1','Adult'))
@@ -33,10 +34,10 @@ dat$Celltype = factor(ss(rownames(dat),'\\.',3),levels =
                         'Oligo_Pre','Oligo_New','Oligo_Mye')))
 
 pdf('plots/cellTypes_mega_tcf4_heatmap.pdf',height = 6,width = 8)
-ggplot(data = dat,aes(fill=estimate, y = Celltype, x = Line)) +
+ggplot(data = dat,aes(fill=percent, y = Celltype, x = Line)) +
   geom_tile(colour = 'black') +xlab('Mouse Model') + ylab('Cell Type') + 
   facet_wrap(~Age,scales = 'free')+ scale_fill_gradient(low="white", high="black",
-           trans ='log10',guide = guide_legend(title = "Odds Ratio"))+
+           guide = guide_legend(title = "Gene Set Ratio"))+
   theme(strip.background = element_rect(fill = "white", colour = "white"),
         axis.text.x = element_text(angle = 30, hjust = 1))
 dev.off()

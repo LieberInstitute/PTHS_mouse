@@ -6,10 +6,6 @@ library(ggplot2)
 load('/dcl01/lieber/ajaffe/Brady/mouseRNAseq/rawCounts_mega_dataset_nov14_n110.rda')
 rownames(pd) = pd$SAMPLE_ID
 
-########################
-# output data for CIBERSORT
-write.table(geneCounts,sep = '\t',quote = FALSE,file = 'tables/rawGeneCounts_mega_tcf4.txt')
-
 ########################################
 # remove outliers mouse 31 and p21 mice,
 ind = which(pd$Age !='p21' &rownames(pd) !='Sample_3_Adult_HT_090614_5_C76VFACXX')
@@ -117,3 +113,23 @@ labs =  Reduce(intersect,lapply(outGeneList,rownames))
 tmp = sapply(outGeneList,function(x) with(x[labs,],padj<0.05 & !is.na(padj)))
 (tt = table(P1 = tmp[, 1],Adult = tmp[, 2]))
 fisher.test(tt)
+
+
+########################
+# output data for CIBERSORT
+write.table(geneCounts,sep = '\t',quote = FALSE,file = 'tables/rawGeneCounts_mega_tcf4.txt')
+
+
+###################
+# alignment details
+load('../tcf4_mouse/rdas/mega_tcf4_pheno.rda')
+
+median(pd$totalMapped[pd$Line=='Maher' & pd$Age !='p21']/1e6)
+quantile(pd$totalMapped[pd$Line=='Maher' & pd$Age !='p21']/1e6)
+median(pd$totalAssignedGene[pd$Line=='Maher' & pd$Age !='p21']*100)
+quantile(pd$totalAssignedGene[pd$Line=='Maher' & pd$Age !='p21']*100)
+
+median(pd$totalMapped[! pd$Line %in% c('Maher','Sweatt')]/1e6)
+quantile(pd$totalMapped[!pd$Line %in% c('Maher','Sweatt')]/1e6)
+median(pd$totalAssignedGene[!pd$Line %in% c('Maher','Sweatt')]*100)
+quantile(pd$totalAssignedGene[!pd$Line %in% c('Maher','Sweatt')]*100)

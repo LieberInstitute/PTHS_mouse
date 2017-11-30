@@ -37,12 +37,15 @@ modules = modules[order(as.numeric(ss(modules,'M',2)))]
 pval = sapply(modules,function(m) fisher.test(table(outGene$padj<.05,outGene$module==m))$p.value)
 OR = sapply(modules,function(m) fisher.test(table(outGene$padj<.05,outGene$module==m))$estimate)
 adj.pval = p.adjust(pval,'fdr')
+N =  sapply(modules, function(m) sum(outGene$padj<.05& outGene$module==m))
+N_max = sapply(modules, function(m) sum(outGene$module==m))
 sum(adj.pval<0.05)
 
 ############################
 # hold onto enriched modules
 modules[adj.pval<.05 & OR >1] #"M2" "M13"
-tmp1 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Parikshak2013',Module = modules)
+tmp1 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Parikshak2013',
+                  Module = paste0('dev',modules), N = N, N_max = N_max)
 
 #################################################
 # load Voineagu huma ASD WGCNA supplementary data
@@ -59,7 +62,7 @@ probes = probes[!duplicated(probes$ID) & !is.na(ss(probes$ID,'_',2)),]
 rownames(probes) = probes$ID
 
 dat$EntrezID = probes[dat$Probe.ID,'Entrez_Gene_ID']
-dat$hg_ensembl = hgMart[match(dat$EntrezID,hgMart$entrezgene),'ensembl_gene_id']
+dat$hg_ensembl = hgMart[match(dat$Probe.ID,hgMart$illumina_humanht_12_v3),'ensembl_gene_id']
 dat = dat[!is.na(dat$hg_ensembl) & !duplicated(dat$hg_ensembl),]
 rownames(dat) = dat$hg_ensembl
 
@@ -80,14 +83,17 @@ modules = modules[order(as.numeric(ss(modules,'M',2)))]
 pval = sapply(modules,function(m) fisher.test(table(outGene$padj<.05,outGene$module==m))$p.value)
 OR = sapply(modules,function(m) fisher.test(table(outGene$padj<.05,outGene$module==m))$estimate)
 adj.pval = p.adjust(pval,'fdr')
+N =  sapply(modules, function(m) sum(outGene$padj<.05& outGene$module==m))
+N_max = sapply(modules, function(m) sum(outGene$module==m))
 
 ####################
 # save Voineagu data
-tmp2 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Voineagu',Module = modules)
-modules[adj.pval<.05 & OR >1] #"M2"  "M14"
+tmp2 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Voineagu',
+                  Module = paste0('asd',modules), N = N, N_max = N_max)
+modules[adj.pval<.05 & OR >1] #"M5"  "M14"
 
 #############################################
-# load new Parikshak 2017 supplementary data
+# load new Parikshak 2016 supplementary data
 dat = data.frame(read_excel('tcf4_mouse/tables/077057-3.xlsx',skip = 2,sheet = 'TableS2a'),stringsAsFactors = F)
 rownames(dat) = dat$"EnsemblID" 
 
@@ -110,21 +116,26 @@ modules = modules[modules != 'M11'] #non coexpressed module
 pval = sapply(modules,function(m) fisher.test(table(outGene$padj<.05,outGene$module==m))$p.value)
 OR = sapply(modules,function(m) fisher.test(table(outGene$padj<.05,outGene$module==m))$estimate)
 adj.pval = p.adjust(pval,'fdr')
+N =  sapply(modules, function(m) sum(outGene$padj<.05 & outGene$module==m))
+N_max = sapply(modules, function(m) sum(outGene$module==m))
 
 ####################
 # save Parikshak 2016 data
-tmp3 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Parikshak2016',Module = modules)
+tmp3 = data.frame(logPval = -log10(adj.pval),OR = OR, Feat = 'Parikshak2016',
+                  Module = paste0('ctx',modules), N = N, N_max = N_max)
 modules[adj.pval<.05 & OR >1] #"M1"  "M3" "M16"
 
 ##########################################
 # combine module enrichment from both papers
 tmp = rbind(tmp2,tmp1,tmp3)
-m = as.character(unique(tmp$Module))
-tmp$Module = factor(tmp$Module, levels = m[order(as.numeric(ss(m,'M',2)))])
+rownames(tmp) = tmp$Module
 #module 7 doesn't exist in Parikshak, filler values log10(p) = 0, OR = 1
-tmp = rbind(tmp,data.frame( logPval =0, OR=1,Feat= 'Parikshak', Module = 'M7')) 
+#tmp = rbind(tmp,data.frame( logPval =0, OR=1,Feat= 'Parikshak', Module = 'M7')) 
 tmp$pval = 10^-tmp$logPval
+tmp = tmp[order(tmp$pval),]
 tmp[with(tmp,which(pval < 0.05 & OR >1 )),]
+signif(tmp$pval[with(tmp,which(pval < 0.05 & OR >1 ))],3)
+
 
 ###############################
 # plot the two modules together

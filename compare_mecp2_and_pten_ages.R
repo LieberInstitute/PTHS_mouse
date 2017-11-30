@@ -71,6 +71,7 @@ dat$Type = ss(as.character(rownames(dat)),'\\.')
 dat$GeneRatio = as.numeric(ss(dat$GeneRatio,'/'))/as.numeric(ss(dat$GeneRatio,'/',2))
 dat$Description = factor(dat$Description,
            levels = dat$Description[order(dat$p.adjust,decreasing = T)])
+
 WriteXLS::WriteXLS(list(GO = dat,Genes = geneMap[sigGenes,]),'tcf4_mouse/tables/overlap_mecp2_pten_tcf4.xls')
 #dat = subset(dat,p.adjust < 0.01)
 pdf('tcf4_mouse/plots/overlap_gene_sets.pdf',height = 2.5,width = 5)
