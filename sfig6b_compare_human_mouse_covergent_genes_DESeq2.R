@@ -147,6 +147,7 @@ summary(lm(pca2$x[,1]~Diagnosis + Region+ totalAssignedGene + Sequencing.Batch +
 
 ###############################################
 # pca on the uniquely PTHS DEGs in human ASD and 15q
+# sfig 6
 whichGenes = rownames(geneMap)[match(outGene3$hsapien_homolog,geneMap$ensemblID)]
 whichGenes = whichGenes[!is.na(whichGenes)]
 
