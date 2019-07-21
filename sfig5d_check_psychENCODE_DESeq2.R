@@ -17,15 +17,16 @@ MMtoHG = getBM(attributes = c('ensembl_gene_id','hsapiens_homolog_ensembl_gene')
 HGEntrez = getBM(attributes = c('ensembl_gene_id','entrezgene'),mart = ensembl2)
 
 #########################################
-#load human data, 'out' is the data frame
-load('asd/rdas/asd_DE_objects_DESeq2_Adj.rda',envir = asd <- new.env())
+#load human data, 
+load('asd/rdas/asd_DE_objects_DESeq2_Qual.rda',envir = asd <- new.env())
 out = do.call('cbind',lapply(asd$outGeneList,function(g) 
   g[Reduce('intersect',lapply(asd$outGeneList,rownames)),]))
 tmp = ss(Reduce('intersect',lapply(asd$outGeneList,rownames)),'\\.')
 out = out[!duplicated(tmp),]
 rownames(out) = tmp[!duplicated(tmp)]
 indFC = grep('log2FoldChange',names(out),value = T)
-indPval = grep('pvalue',names(out),value = T)
+indPval = grep('pval',names(out),value = T)
+
 
 ############################################
 # check mouse tcf4 DEGs w/ psych encode data
@@ -41,12 +42,12 @@ outGene = outGeneList[['Adult']]
 # get ORs and and p-values for concordance enrichment
 for (n in names(outGeneList)){
   g = outGeneList[[n]]; print(n)
-  lapply(indPval,function(n){ #enrichment of DEG
+  (lapply(indPval,function(n){ #enrichment of DEG
     print(n)
     (tt = table(Human = out[g$hsapien_homolog,n] < 0.05,Mouse = g$padj< 0.05))
     print(getOR(tt))
     fisher.test(tt)
-  })
+  }))
   
   # no enforcement mice or human
   g$mouseFCsign = paste0(sign(g$log2FoldChange),'_mm')
@@ -65,12 +66,7 @@ for (n in names(outGeneList)){
   outFCrep = sign(out[g$hsapien_homolog,indFC])
   lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],g$mouseFCsign)))
   sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],g$mouseFCsign)[1:3])
-  
-  # human pval < 0.05, and mice padjust < 0.05
-  outFCrep[out[g$hsapien_homolog,indPval] > 0.05] = NA
-  lapply(colnames(outFCrep),function(i) addmargins(table(outFCrep[,i],g$mouseFCsign)))
-  sapply(colnames(outFCrep),function(i) fisher.test(outFCrep[,i],g$mouseFCsign)[1:3])
-}
+  }
 
 ##########################################
 # save table of replicated human ASD genes
@@ -94,7 +90,7 @@ dat$type = rep(paste0(type,' (N=',sapply(outList,nrow),')'),times = sapply(outLi
 dat$region = ss(dat$type,'_')
 dat$case = ss(dat$type,'_',2)
 dat$adj = ss(dat$type,'_',3)
-#WriteXLS(dat,ExcelFileName = 'tcf4_mouse/tables/psychENCODE_human_asd_replication.xls')
+WriteXLS(dat,ExcelFileName = 'tcf4_mouse/tables/psychENCODE_human_asd_replication.xls')
 
 #####################################
 # plot human asd FC v tcf4 mouse
@@ -126,6 +122,7 @@ pdf('tcf4_mouse/plots/human_asd_psychENCODE_fc_qual.pdf',w = 10,h = 4)
 ggplot(data=dat,aes(x=log2FoldChange_mouse, y=log2FoldChange_human, fill=case)) +
   geom_point(alpha = .6,pch=21)+facet_wrap(~region,ncol =3,shrink=T) + 
   theme_bw(base_size = 14, base_family = "Helvetica")  + 
+  ylim(low = -1, high= 1)+
   xlab("Mouse log2 fold-change") + ylab('Human log2 fold change') +
   geom_vline(xintercept = 0,colour= 'red',linetype = 'dashed') + 
   geom_hline(yintercept = 0,colour= 'red',linetype = 'dashed')+ 
@@ -155,11 +152,11 @@ table(dat$region, dat$case)
 # enrich all the GO terms :D
 #compareKegg = compareCluster(fun ='enrichKEGG',hsapien_entrez ~ region+case,data = subset(dat,region != 'vermis'),
 #                             universe = univ,organism = "hsa", pvalueCutoff = 0.05)
-compareGoMf = compareCluster(fun ='enrichGO',hsapien_entrez ~ region,data =  subset(dat,region != 'vermis'), 
+compareGoMf = compareCluster(fun ='enrichGO',hsapien_entrez ~ region+case,data =  subset(dat,region != 'vermis'), 
                              universe = univ, ont = "MF",OrgDb=org.Hs.eg.db, pvalueCutoff = 0.05, readable = TRUE)
-compareGoBp = compareCluster(fun ='enrichGO',hsapien_entrez ~ region,data =  subset(dat,region != 'vermis'), 
+compareGoBp = compareCluster(fun ='enrichGO',hsapien_entrez ~ region+case,data =  subset(dat,region != 'vermis'), 
                              universe = univ, ont = "BP",OrgDb=org.Hs.eg.db, pvalueCutoff = 0.05, readable = TRUE)
-compareGoCc = compareCluster(fun ='enrichGO',hsapien_entrez ~ region,data =  subset(dat,region != 'vermis'), 
+compareGoCc = compareCluster(fun ='enrichGO',hsapien_entrez ~ region+case,data =  subset(dat,region != 'vermis'), 
                              universe = univ, ont = "CC",OrgDb=org.Hs.eg.db,pvalueCutoff = 0.05, readable = TRUE)
 compareGo = lapply(list(compareGoMf=compareGoMf,compareGoBp=compareGoBp,compareGoCc = compareGoCc),dropGO,level = 1:2)
 

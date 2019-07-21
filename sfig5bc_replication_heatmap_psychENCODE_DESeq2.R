@@ -38,7 +38,7 @@ MMtoHG = getBM(attributes = c('ensembl_gene_id','hsapiens_homolog_ensembl_gene')
 
 ###########################
 #load human ASD/Dup15q data
-load('asd/rdas/asd_DE_objects_DESeq2_Adj.rda',envir = asd <- new.env())
+load('asd/rdas/asd_DE_objects_DESeq2_Qual.rda',envir = asd <- new.env())
 asd$outGeneList = lapply(asd$outGeneList[grep('Qual',names(asd$outGeneList))],function(g){
   tmpRowNames = ss(rownames(g),'\\.')
   ind = !duplicated(tmpRowNames)
@@ -135,6 +135,7 @@ rownames(datLong)=ss(rownames(datLong),'\\.')
 
 #########################
 # logFC concordance rates, correlations, enrichment odds ratios
+if (TRUE){
 nullKappas = lapply(asd$outGeneList,function(g){
   ecdf(unlist(lapply(1:1000,function(i){
     cat(i)
@@ -147,6 +148,9 @@ nullKappas = lapply(asd$outGeneList,function(g){
   })))
 })
 save(nullKappas,file = 'tcf4_mouse/rdas/psychENCODE_asd_nullKappas.rda')
+} else{
+  load('tcf4_mouse/rdas/psychENCODE_asd_nullKappas.rda')
+}
 
 datLong$kappas =  sapply(rownames(datLong),function(n){
   g = asd$outGeneList[[n]]
@@ -186,6 +190,7 @@ ggplot(data = datLong,aes(x = Region,y = kappas,fill = Diagnosis))+
 #  scale_fill_manual(values = c('gray','black')) + 
 #  geom_hline(yintercept = 0,linetype = 2,color = 'red')
 dev.off()
+save(datLong,file = 'tcf4_mouse/rdas/psychENCODE_asd_enrichment_concordance.rda')
 
 ########################
 # make venndiagram plots
