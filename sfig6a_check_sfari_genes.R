@@ -33,12 +33,12 @@ dim(sigGene) #1725 DEGs with human homolog
 
 ########################
 # load SFARI human genes
-humanSFARI = read.csv('tcf4_mouse/tables/SFARI-Gene_genes_export30-11-2017.csv')
+humanSFARI = read.csv('tcf4_mouse/tables/SFARI-Gene_genes_08-06-2019release_08-08-2019export.csv')
 humanSFARI = with(humanSFARI, humanSFARI[order(gene.score),])
 humanSFARI = cbind(humanSFARI,outGene[lookfor(humanSFARI$gene.symbol,outGene$Symbol),])
 humanSFARI= humanSFARI[!is.na(humanSFARI$Symbol),]
 humanSFARI = humanSFARI[!duplicated(humanSFARI),]
-nrow(humanSFARI) # 886 genes used
+nrow(humanSFARI) # 992 genes used
 
 #########################
 # load SFARI mouse models

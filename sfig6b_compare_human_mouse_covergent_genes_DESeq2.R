@@ -104,13 +104,15 @@ whichGenes = whichGenes[!is.na(whichGenes)]
 
 #pca1 = prcomp(t(yGene[whichGenes,]))
 pca1 = prcomp(t(log2(geneRpkm+1)[whichGenes,]))
-pca1resid = prcomp(t(yGene[whichGenes,]))
+# pca1resid = prcomp(t(yGene[whichGenes,]))
+## clean the PCs, not expression
+pca1resid = t(cleaningY(t(pca1$x), modAdj, P=3))
 
 postscript('asd/plots/asd_myelination_genes_pca.eps',height=5,width=4)
-boxplot(pca1resid$x[,1]~pd$Diagnosis,main = 'Covergent Mouse Gene Set PCA',xlab = '',outline=FALSE,
-        ylab= paste0('Eigengene (',signif(summary(pca1resid)$importance[2,1]*100,2),'% of Variance)'))
+boxplot(pca1resid[,1]~pd$Diagnosis,main = 'Covergent Mouse Gene Set PCA',xlab = '',outline=FALSE,
+        ylab= paste0('Eigengene (',signif(summary(pca1)$importance[2,1]*100,2),'% of Variance)'))
 col = brewer.pal(3,'Set1')
-beeswarm(pca1resid$x[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20, pwbg = col[as.numeric(factor(pd$Region))])
+beeswarm(pca1resid[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20, pwbg = col[as.numeric(factor(pd$Region))])
 dev.off()
 summary(lm(pca1$x[,1]~Diagnosis+Region+ totalAssignedGene + Sequencing.Batch + 
              Brain.Bank + RIN + Age + Sex + PC1+ PC2+ PC3+ PC4+ PC5,data = cbind(pd,qSVs)))
@@ -129,13 +131,16 @@ whichGenes = rownames(geneMap)[match(outGene2$hsapien_homolog,geneMap$ensemblID)
 whichGenes = whichGenes[!is.na(whichGenes)]
 
 pca2 = prcomp(t(log2(geneRpkm+1)[whichGenes,]))
-pca2resid = prcomp(t(yGene[whichGenes,]))
+# pca2resid = prcomp(t(yGene[whichGenes,]))
+## clean the PCs, not expression
+pca2resid = t(cleaningY(t(pca2$x), modAdj, P=3))
+
 
 postscript('asd/plots/pths_mouse_genes_in_asd_pca.eps',height=5,width=4)
-boxplot(pca2resid$x[,1]~pd$Diagnosis,main = 'All PTHS Gene Set PCA',xlab = '',outline = FALSE,
-        ylab= paste0('Eigengene (',signif(summary(pca2resid)$importance[2,1]*100,2),'% of Variance)'))
+boxplot(pca2resid[,1]~pd$Diagnosis,main = 'All PTHS Gene Set PCA',xlab = '',outline = FALSE,
+        ylab= paste0('Eigengene (',signif(summary(pca2)$importance[2,1]*100,2),'% of Variance)'))
 col = brewer.pal(3,'Set1')
-beeswarm(pca2resid$x[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20, pwbg = col[as.numeric(factor(pd$Region))])
+beeswarm(pca2resid[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20, pwbg = col[as.numeric(factor(pd$Region))])
 dev.off()
 summary(lm(pca2$x[,1]~Diagnosis + Region+ totalAssignedGene + Sequencing.Batch + 
              Brain.Bank + RIN + Age + Sex + PC1+ PC2+ PC3+ PC4+ PC5,data = cbind(pd,qSVs)))
@@ -152,7 +157,9 @@ whichGenes = rownames(geneMap)[match(outGene3$hsapien_homolog,geneMap$ensemblID)
 whichGenes = whichGenes[!is.na(whichGenes)]
 
 pca3 = prcomp(t(log2(geneRpkm+1)[whichGenes,]))
-pca3resid = prcomp(t(yGene[whichGenes,]))
+# pca3resid = prcomp(t(yGene[whichGenes,]))
+## clean the PCs, not expression
+pca3resid = t(cleaningY(t(pca3$x), modAdj, P=3))
 
 postscript('asd/plots/uniquely_pths_mouse_genes_in_asd_pca.eps',height=5,width=4)
 boxplot(pca3resid$x[,1]~pd$Diagnosis,main = 'Only PTHS Gene Set PCA',xlab = '',outline = FALSE,
@@ -178,10 +185,12 @@ whichGenes = rownames(geneMap)[match(outGene1$hsapien_homolog[ind],geneMap$ensem
 whichGenes = whichGenes[!is.na(whichGenes)]
 
 pca4 = prcomp(t(log2(geneRpkm+1)[whichGenes,]))
-pca4resid = prcomp(t(yGene[whichGenes,]))
+# pca4resid = prcomp(t(yGene[whichGenes,]))
+## clean the PCs, not expression
+pca4resid = t(cleaningY(t(pca4$x), modAdj, P=3))
 
 postscript('asd/plots/asd_9GO_genes_pca.eps',height=5,width=4)
-boxplot(pca4resid$x[,1]~pd$Diagnosis,main = '9 GO CAG Gene Set PCA',xlab = '',outline=FALSE,
+boxplot(pca4resid[,1]~pd$Diagnosis,main = '9 GO CAG Gene Set PCA',xlab = '',outline=FALSE,
         ylab= paste0('Eigengene (',signif(summary(pca4resid)$importance[2,1]*100,2),'% of Variance)'))
 col = brewer.pal(3,'Set1')
 beeswarm(pca4resid$x[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20, pwbg = col[as.numeric(factor(pd$Region))])
@@ -199,6 +208,7 @@ convergeMat = t(apply(yGene[whichGenes,],1,function(x) (x-mean(x))/sd(x)))
 annoColor  = list(Diagnosis = c(CTL = '#f0f0f0',ASD= '#ef8a62',`Dup15` ='#67a9cf'),
                   Region = c(`ba9` = '#e41a1c',`ba41-42-22` = '#377eb8',`vermis` = '#4daf4a'))
 breaksList = seq(-6, 6, by = .1)
+
 
 pdf('asd/plots/asd_heatmap_covergent_genes.pdf',height = 6,width = 8)
 ind = which(pd$Region=='ba9')
