@@ -1,7 +1,0 @@
-status,cnv-locus,cnv-type,human-cnv-loci,number-of-models,has-rescue-model,model-species
-9,m7qB5-qC,Duplication,15q11-q13,7,1,"Mus musculus"
-9,m7qC,Deletion-Duplication,15q13.3,3,0,"Mus musculus"
-9,m7qF3,Deletion-Duplication,16p11.2,58,1,"Mus musculus"
-9,m11qB1.3-qB2,Deletion-Duplication,17p11.2,4,1,"Mus musculus"
-9,m,Deletion-Duplication,3q29,0,0,"Mus musculus"
-9,m5qG2,Deletion-Duplication,7q11.23,3,0,"Mus musculus"
