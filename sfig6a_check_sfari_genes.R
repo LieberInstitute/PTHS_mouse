@@ -27,9 +27,9 @@ outGene$hsapien_homolog = MMtoHG$hsapiens_homolog_ensembl_gene[match(rownames(ou
 # keep only expressed genes (DESeq2 will not adjust p-value if not expressed enough)
 #outGene = outGene[!is.na(outGene$padj),] #take only genes w/ human homolog
 outGene = outGene[grepl('ENSG',outGene$hsapien_homolog),] #take only genes w/ human homolog
-dim(outGene) #16303 background genes
+dim(outGene) #16123 background genes
 sigGene = with(outGene,outGene[which(padj < 0.05 &!is.na(padj)),])
-dim(sigGene) #1725 DEGs with human homolog
+dim(sigGene) #1711 DEGs with human homolog
 
 ########################
 # load SFARI human genes
@@ -42,33 +42,77 @@ nrow(humanSFARI) # 992 genes used
 
 #########################
 # load SFARI mouse models
-mouseSFARI = read.csv('tcf4_mouse/tables/SFARI-Gene_animal-genes_export30-11-2017.csv')
+mouseSFARI = read.csv('tcf4_mouse/tables/SFARI-Gene_animal-genes_08-06-2019release_08-08-2019export.csv')
 mouseSFARI = with(mouseSFARI,mouseSFARI[model.species=='Mus musculus',])
 mouseSFARI = cbind(mouseSFARI,outGene[lookfor(mouseSFARI$gene.symbol,outGene$Symbol),])
 mouseSFARI= mouseSFARI[!is.na(mouseSFARI$Symbol),]
 mouseSFARI = mouseSFARI[order(match(mouseSFARI$Symbol,humanSFARI$Symbol)),]
 mouseSFARI = mouseSFARI[!duplicated(mouseSFARI),]
-nrow(mouseSFARI) # 234 expressed in mouse tcf4 dataset
+nrow(mouseSFARI) # 255 expressed in mouse tcf4 dataset
 
 ###########################
 # list of DEG in mouse SFARI
-# 67 genes differentially expressed and in SFARI 
-(t1 = with(outGene,table(inMouseSFARI = Symbol %in% mouseSFARI$Symbol,inDEG = padj < 0.05)))
-fisher.test(t1) # OR = 3.141425, p-value = 1.231e-12
+# 72 genes differentially expressed and in SFARI 
+(t1 = with(outGene,table(inMouseSFARI = Symbol %in% mouseSFARI$Symbol,inDEG = padj < 0.05 & !is.na(padj))))
+fisher.test(t1) # OR = 3.42, p-value = 2.874e-15
 ind1 = with(sigGene, which(mouseSFARI$Symbol %in% Symbol))
 
 #######################################
 # list of DEG in scored human SFARI list
-# 170 human SFARI ASD-linked genes in our list of DEGs
-(t2 = with(outGene,table(inHumanSFARI = Symbol %in% humanSFARI$Symbol,inDEG = padj < 0.05)))
-fisher.test(t2) # OR = 1.899831, p-value = 1.261e-11
+# 190 human SFARI ASD-linked genes in our list of DEGs
+(t2 = with(outGene,table(inHumanSFARI = Symbol %in% humanSFARI$Symbol,inDEG = padj < 0.05 & !is.na(padj))))
+fisher.test(t2) # OR = 2.116, p-value = 2.2e-16
 ind2 = with(sigGene, which(humanSFARI$Symbol %in% Symbol))
 
+##########################
+## sensitivity for gene score
+humanSFARI_strict = humanSFARI[humanSFARI$gene.score %in% 1:3 | 
+								humanSFARI$syndromic == 1,] 
+(t2_strict = with(outGene,table(inHumanSFARI = Symbol %in% humanSFARI_strict$Symbol,inDEG = padj < 0.05 & !is.na(padj))))
+fisher.test(t2_strict) # OR = 2.95988, p-value = 2.2e-16
+				
 ####################
 # save the two lists
 sfariList = list(Scored_Human_SFARI_Genes = humanSFARI[ind2,],
                  Mouse_Model_Genes = mouseSFARI[ind1,])
-WriteXLS(sfariList,ExcelFileName = 'tcf4_mouse/tables/mega_tcf4_adult_SFARI_asd_gene_list_20173011.xls')
+WriteXLS(sfariList,ExcelFileName = 'tcf4_mouse/tables/mega_tcf4_adult_SFARI_asd_gene_list_20190814.xls')
+
+
+
+
+####################
+# Sander et al, Neuron 2015 enrichments
+sander = readxl::read_xlsx('tcf4_mouse/tables/Sanders_et_al-Neuron_2015-Table-S6_20190814.xlsx', sheet = 'TADA_Scores')
+sander = sander[sander$tadaFdrAscSscExomeSscAgpSmallDel <0.1, ] #select the 65 small del genes FDR <0.1
+sander$RefSeqGeneName = snakecase::to_upper_camel_case(sander$RefSeqGeneName)
+sander = cbind(sander,outGene[lookfor(sander$RefSeqGeneName,outGene$Symbol),])
+sander= sander[!is.na(sander$Symbol),]
+sander = sander[!duplicated(sander),]
+
+nrow(sander) # 61 genes used
+sum(sander$Symbol %in% outGene$Symbol)
+
+(t3 = with(outGene,table(inHumanSFARI = Symbol %in% sander$Symbol,inDEG = padj < 0.05 & !is.na(padj))))
+fisher.test(t3) # OR = 5.92, p-value = 7.332e-10
+ind3 = with(sigGene, which(sander$Symbol %in% Symbol))
+
+####################
+# Satterstrom et al, bioRxiv 2018 enrichments
+satterstrom = readxl::read_xlsx('tcf4_mouse/tables/Satterstrom_et_al-bioRxiv_Table-S4_20190814.xlsx', sheet = '102 ASD FDR≤0.1 genes')
+satterstrom$hugoGene = snakecase::to_upper_camel_case(satterstrom$hugoGene)
+satterstrom = cbind(satterstrom,outGene[lookfor(satterstrom$hugoGene,outGene$Symbol),])
+satterstrom= satterstrom[!is.na(satterstrom$Symbol),]
+satterstrom = satterstrom[!duplicated(satterstrom),]
+
+nrow(satterstrom) # 97 genes used
+sum(satterstrom$Symbol %in% outGene$Symbol)
+
+(t4 = with(outGene,table(inHumanSFARI = Symbol %in% satterstrom$Symbol,inDEG = padj < 0.05 & !is.na(padj))))
+fisher.test(t4) # OR = 4.83, p-value = 2.325e-11
+ind4 = with(sigGene, which(satterstrom$hugoGene %in% Symbol))
+
+
+
 
 ### venn diagram
 library(limma)
