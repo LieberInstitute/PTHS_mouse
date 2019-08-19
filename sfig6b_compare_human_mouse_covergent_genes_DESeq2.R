@@ -93,7 +93,8 @@ mod = model.matrix(~Diagnosis + totalAssignedGene + Sequencing.Batch +
 modAdj = cbind(mod,qSVs)
 
 pd = pd[order(pd$Diagnosis),]
-yGene = cleaningY(log2(geneRpkm+1),modAdj,3)
+#yGene = cleaningY(log2(geneRpkm+1),modAdj,3)
+yGene = log2(geneRpkm+1)
 yGene = yGene[,rownames(pd)]
 geneRpkm = geneRpkm[,rownames(pd)]
 
@@ -110,9 +111,10 @@ pca1resid = t(cleaningY(t(pca1$x), modAdj, P=3))
 
 postscript('asd/plots/asd_myelination_genes_pca.eps',height=5,width=4)
 boxplot(pca1resid[,1]~pd$Diagnosis,main = 'Covergent Mouse Gene Set PCA',xlab = '',outline=FALSE,
-        ylab= paste0('Eigengene (',signif(summary(pca1)$importance[2,1]*100,2),'% of Variance)'))
+        ylab= paste0('Eigengene (',signif(summary(pca1)$importance[2,1]*100,2),'% of Variance) | Model'))
 col = brewer.pal(3,'Set1')
-beeswarm(pca1resid[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20, pwbg = col[as.numeric(factor(pd$Region))])
+beeswarm(pca1resid[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20, 
+	pwcol = col[as.numeric(factor(pd$Region))])
 dev.off()
 summary(lm(pca1$x[,1]~Diagnosis+Region+ totalAssignedGene + Sequencing.Batch + 
              Brain.Bank + RIN + Age + Sex + PC1+ PC2+ PC3+ PC4+ PC5,data = cbind(pd,qSVs)))
@@ -135,15 +137,19 @@ pca2 = prcomp(t(log2(geneRpkm+1)[whichGenes,]))
 ## clean the PCs, not expression
 pca2resid = t(cleaningY(t(pca2$x), modAdj, P=3))
 
-
 postscript('asd/plots/pths_mouse_genes_in_asd_pca.eps',height=5,width=4)
 boxplot(pca2resid[,1]~pd$Diagnosis,main = 'All PTHS Gene Set PCA',xlab = '',outline = FALSE,
-        ylab= paste0('Eigengene (',signif(summary(pca2)$importance[2,1]*100,2),'% of Variance)'))
+        ylab= paste0('Eigengene (',signif(summary(pca2)$importance[2,1]*100,2),'% of Variance) | Model'))
 col = brewer.pal(3,'Set1')
-beeswarm(pca2resid[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20, pwbg = col[as.numeric(factor(pd$Region))])
+beeswarm(pca2resid[,1]~pd$Diagnosis,corral = 'wrap',
+	add = TRUE,pch = 20, pwcol= col[as.numeric(factor(pd$Region))])
+legend('right',pch = 20, col = col, legend = toupper(levels(factor(pd$Region))))
 dev.off()
+
+
 summary(lm(pca2$x[,1]~Diagnosis + Region+ totalAssignedGene + Sequencing.Batch + 
              Brain.Bank + RIN + Age + Sex + PC1+ PC2+ PC3+ PC4+ PC5,data = cbind(pd,qSVs)))
+
 summary(lmer(pca2$x[,1]~Diagnosis+Region+ totalAssignedGene + Sequencing.Batch + 
                Brain.Bank + RIN + Age + Sex + PC1+ PC2+ PC3+ PC4+ PC5 + (1|Brain.ID),data = cbind(pd,qSVs)))
 
@@ -163,8 +169,9 @@ pca3resid = t(cleaningY(t(pca3$x), modAdj, P=3))
 
 postscript('asd/plots/uniquely_pths_mouse_genes_in_asd_pca.eps',height=5,width=4)
 boxplot(pca3resid$x[,1]~pd$Diagnosis,main = 'Only PTHS Gene Set PCA',xlab = '',outline = FALSE,
-        ylab= paste0('Eigengene (',signif(summary(pca3resid)$importance[2,1]*100,2),'% of Variance)'))
-beeswarm(pca3resid$x[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20)
+        ylab= paste0('Eigengene (',signif(summary(pca3resid)$importance[2,1]*100,2),'% of Variance) | Model'))
+beeswarm(pca3resid$x[,1]~pd$Diagnosis,corral = 'wrap',add = TRUE,pch = 20,
+	pwcol= col[as.numeric(factor(pd$Region))])
 dev.off()
 
 summary(lm(pca3$x[,1]~Diagnosis + Region+ totalAssignedGene + Sequencing.Batch + 
@@ -191,7 +198,7 @@ pca4resid = t(cleaningY(t(pca4$x), modAdj, P=3))
 
 postscript('asd/plots/asd_9GO_genes_pca.eps',height=5,width=4)
 boxplot(pca4resid[,1]~pd$Diagnosis,main = '9 GO CAG Gene Set PCA',xlab = '',outline=FALSE,
-        ylab= paste0('Eigengene (',signif(summary(pca4resid)$importance[2,1]*100,2),'% of Variance)'))
+        ylab= paste0('Eigengene (',signif(summary(pca4resid)$importance[2,1]*100,2),'% of Variance) | Model'))
 col = brewer.pal(3,'Set1')
 beeswarm(pca4resid$x[,1]~pd$Diagnosis,corral = 'wrap',add = T,pch = 20, pwbg = col[as.numeric(factor(pd$Region))])
 dev.off()
