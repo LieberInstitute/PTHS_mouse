@@ -48,7 +48,7 @@ mod = model.matrix(~Dx + as.numeric(rin) +
 ff = summary(lm(eigenGene ~ mod - 1))
 
 cleanEigen = cleaningY(matrix(eigenGene, nr=1), mod, P=2)
-pdf("cagBoxplots_ASD_LIBD.pdf",h=6,w=7)
+pdf("asd/plots/cagBoxplots_ASD_LIBD.pdf",h=6,w=5)
 par(mar=c(5,6,2,2), cex.axis=1.6,cex.lab=1.6)
 palette(brewer.pal(5,"Set1"))
 boxplot(cleanEigen[1,] ~ pd$Dx, outline = FALSE,
@@ -56,7 +56,7 @@ boxplot(cleanEigen[1,] ~ pd$Dx, outline = FALSE,
 	ylab = paste0("CAG Eigengene: ", pcaVars, "% Var Expl | Model"))
 points(cleanEigen[1,] ~ jitter(as.numeric(factor(pd$Dx)), amount=0.15),
 	pch = 21, bg=factor(pd$Dx))
-legend("top", paste0("p=", signif(ff$coef[2,4],3)),cex=1.5)
+legend("topright", paste0("p=", signif(ff$coef[2,4],3)),cex=1.5)
 dev.off()
 
 colnames(pd)[54:64] = ss(colnames(pd)[54:64], ":")
@@ -81,7 +81,7 @@ fOligo = summary(lm(cellCounts_Exprs$Oligodendrocytes ~ mod -1 ))
 fOPC = summary(lm(cellCounts_Exprs$OPC ~ mod -1 ))
 	
 ## boxplots ###
-pdf("asd/plots/boxplot_of_cell_counts_asd.pdf")
+pdf("asd/plots/boxplot_of_cell_counts_asd_libd.pdf",h=6,w=5)
 palette(brewer.pal(5,"Set1"))
 par(mar=c(5,6,3,2), cex.axis=2,cex.lab=2)
 boxplot(cellCounts_Exprs$Oligodendrocytes ~ pd$Dx,
@@ -100,7 +100,7 @@ dev.off()
 	
 ## boxplots, clean ###
 countsAdj = as.data.frame(t(cleaningY(t(cellCounts_Exprs), mod, P=2)))
-pdf("asd/plots/boxplot_of_cell_counts_asd_clean.pdf",w=5)
+pdf("asd/plots/boxplot_of_cell_counts_asd_libd_clean.pdf",h=6,w=5)
 palette(brewer.pal(5,"Set1"))
 par(mar=c(5,6,3,2), cex.axis=2,cex.lab=2)
 boxplot(countsAdj$Oligodendrocytes ~ pd$Dx,

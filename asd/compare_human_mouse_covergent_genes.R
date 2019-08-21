@@ -32,7 +32,7 @@ MMtoHG = getBM(attributes = c('ensembl_gene_id','hsapiens_homolog_ensembl_gene')
 
 ###########################
 #load human ASD/Dup15q data
-load('asd/rdas/asd_DE_objects_DESeq2_Adj.rda',envir = asd <- new.env())
+load('rdas/asd_DE_objects_DESeq2_Adj.rda',envir = asd <- new.env())
 asd$outGeneList = lapply(asd$outGeneList[grep('Qual',names(asd$outGeneList))],function(g){
   tmpRowNames = ss(rownames(g),'\\.')
   ind = !duplicated(tmpRowNames)
@@ -42,18 +42,18 @@ asd$outGeneList = lapply(asd$outGeneList[grep('Qual',names(asd$outGeneList))],fu
 
 ##########################
 # load mouse tcf4 DEG data
-load("tcf4_mouse/rdas/mega_tcf4_ages_DE_objects_DESeq2.rda") #PTHS mouse data
+load("../tcf4_mouse/rdas/mega_tcf4_ages_DE_objects_DESeq2.rda") #PTHS mouse data
 outGeneList = lapply(outGeneList, function(g) {
   g$hsapien_homolog = MMtoHG$hsapiens_homolog_ensembl_gene[match(rownames(g),MMtoHG$ensembl_gene_id)]
   g[grepl('ENSG',g$hsapien_homolog),]})
-load('mecp2/rdas/mecp2_DE_objects_DESeq2.rda',envir = mecp2 <- new.env()) #Rett mouse data
+load('../mecp2/rdas/mecp2_DE_objects_DESeq2.rda',envir = mecp2 <- new.env()) #Rett mouse data
 mecp2$outGene = with(mecp2$outGene, mecp2$outGene[padj<0.05 & !is.na(padj),])
-load('pten/rdas/pten_ages_DE_objects_DESeq2.rda',envir = pten <- new.env()) #PTEN mouse data
+load('../pten/rdas/pten_ages_DE_objects_DESeq2.rda',envir = pten <- new.env()) #PTEN mouse data
 pten$outGene = with(pten$outGeneList[['Adult']], pten$outGeneList[['Adult']][padj<0.05 & !is.na(padj),])
 
 ############################################
 # load 34 convergent genes from mouse models
-load('tcf4_mouse/rdas/overlap_tcf4_mecp2_pten.rda')
+load('../tcf4_mouse/rdas/overlap_tcf4_mecp2_pten.rda')
 outGene1 = outGeneList[['Adult']][sigGenes,] #myelination genes
 outGene1 = outGene1[complete.cases(outGene1),]
 
@@ -76,7 +76,7 @@ if(FALSE){
 } else {
   load('/dcl01/lieber/ajaffe/Brady/asd/geneRpkm_asd_dec9_n204.rda')
 }
-load('asd/rdas/pheno.rda',envir = dat<-new.env())
+load('rdas/pheno.rda',envir = dat<-new.env())
 pd = cbind(pd,dat$pd)
 all.equal(pd$SampleID,pd$SAMPLE_ID) #samples line up
 rownames(pd) = pd$SAMPLE_ID
@@ -85,9 +85,11 @@ pd$Diagnosis = factor(ifelse(pd$Detailed.Diagnosis =="Chromosome 15q Duplication
 
 ########################################
 # residualize on confounding and qSVs
-load('asd/rdas/qSVAs-geschwind_asd.rdas')
+load('rdas/qSVAs-geschwind_asd.rdas')
+identical(colnames(degMat), pd$SAMPLE_ID)
 mod = model.matrix(~Diagnosis + totalAssignedGene + Sequencing.Batch + 
                      Brain.Bank + RIN + Age + Sex, data =pd)
+degMat = degMat[
 qSVs = sva::qsva(degMat, mod) # identify quality surrogate variables
 modAdj = cbind(mod,qSVs)
 
