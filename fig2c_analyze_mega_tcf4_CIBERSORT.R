@@ -22,6 +22,12 @@ datLong$Age = droplevels(datLong$Age)
 datLong$Type = paste0(datLong$Celltype,'.',datLong$Age)
 
 ##############################################
+# fit multinomial dirichlet model
+library(MGLM)
+mnreg <- MGLMreg(formula = as.matrix(dat) ~ Genotype +Line, data = pd[rownames(dat),id_vars], dist = "GMN")
+coef(mnreg)
+
+##############################################
 # fit multinomial model for shift in p1 brains
 indList = split(seq(nrow(datLong)),list(datLong$Celltype,datLong$Age))
 coefs = sapply(indList, function(ii){
@@ -40,7 +46,7 @@ pdf('plots/mega_tcf4_celltype_plots_adult.pdf',width=6,height = 2.5)
 ggplot(aes(x = Region,y = Fraction,fill = Genotype),
        data=datLong[datLong$Type %in% sigtype& datLong$Age=='Adult',])+
   geom_boxplot()+scale_fill_manual(values = c('gray50','red'),guide=FALSE)+
-  #geom_point(position = position_jitterdodge())+
+  geom_point(pch = 21, position = position_jitterdodge())+
   facet_wrap(~Celltype,nrow = 1)+ xlab('Tissue')+ylab('Proportion')+
   theme(strip.background = element_blank(), strip.text.x = element_blank())
 dev.off()
@@ -51,7 +57,7 @@ pdf('plots/mega_tcf4_celltype_plots_p1.pdf',width=2.5,height = 2.5)
 ggplot(aes(x = Region,y = Fraction,fill = Genotype),
        data=datLong[datLong$Type %in% sigtype & datLong$Age=='p1',])+
   geom_boxplot()+scale_fill_manual(values = c('gray50','red'),guide=FALSE)+
-  #geom_point(position = position_jitterdodge())+
+  geom_point(pch = 21, position = position_jitterdodge())+
   facet_wrap(~Celltype,scales = 'free',nrow = 1)+
   xlab('Tissue')+ylab('Proportion')+
   theme(strip.background = element_blank(), strip.text.x = element_blank())

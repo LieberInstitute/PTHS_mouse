@@ -197,6 +197,17 @@ points(countsAdj$OPC ~
 legend("topleft", paste0("ASD p=", signif(coefAsd[2,5],3)),cex=1.5)
 dev.off()
 
+pdf("asd/plots/boxplot_of_cell_counts_asd_geschwind_clean_01.pdf",h=6,w=5)
+palette(brewer.pal(5,"Set1"))
+par(mar=c(7,6,3,2), cex.axis=2,cex.lab=2,cex.main=2)
+boxplot(countsAdj$Oligodendrocytes ~ pd$Diagnosis,
+	ylab = "Proportion", outline=FALSE,
+	ylim = c(0,1),main="OLs",las=3)
+points(countsAdj$Oligodendrocytes ~ 
+	jitter(as.numeric(pd$Diagnosis), amount=0.15),pch =21,bg=pd$Diagnosis)
+legend("topright", paste0("ASD p=", signif(coefAsd[4,5],3)),cex=1.5)
+dev.off()
+
 
 #######
 ## big boxplot
