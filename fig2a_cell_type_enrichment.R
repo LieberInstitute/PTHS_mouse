@@ -32,10 +32,14 @@ dat$Age = factor(ss(rownames(dat),'\\.',2),levels = c('p1','Adult'))
 dat$Celltype = factor(ss(rownames(dat),'\\.',3),levels = 
                         rev(c('Astrocyte','Endothelial','Microglia','Neuron',
                         'Oligo_Pre','Oligo_New','Oligo_Mye')))
+dat$fdrSignif = ifelse(dat$padj < 0.001, "***",
+                ifelse(dat$padj < 0.01, "**",
+                ifelse(dat$padj < 0.05, "*",'')))
 
 pdf('plots/cellTypes_mega_tcf4_heatmap.pdf',height = 6,width = 8)
 ggplot(data = dat,aes(fill=percent, y = Celltype, x = Line)) +
   geom_tile(colour = 'black') +xlab('Mouse Model') + ylab('Cell Type') + 
+  geom_text(colour = 'black', aes(label = fdrSignif)) +
   facet_wrap(~Age,scales = 'free')+ scale_fill_gradient(low="white", high="black",
            guide = guide_legend(title = "Gene Set Ratio"))+
   theme(strip.background = element_rect(fill = "white", colour = "white"),

@@ -36,7 +36,7 @@ table(sign(sigGene$log2FoldChange)) # 21 up, 21 down
 
 #################
 # get rlog counts
-yExon = rlog(exonDds)
+yExon = vst(exonDds)
 yExon = assays(yExon)[[1]]
 
 #################

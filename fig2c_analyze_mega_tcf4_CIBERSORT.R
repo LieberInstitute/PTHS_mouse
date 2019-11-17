@@ -8,9 +8,25 @@ options(stringsAsFactors = F)
 # load the cibersort and pca cell composition data
 load('../tcf4_mouse/rdas/mega_tcf4_pheno.rda')
 pd$Region = ifelse(pd$Line =='Maher','mPFC',
-            ifelse(pd$Line =='Sweatt','CA1','Wholebrain'))
+            ifelse(pd$Line =='Sweatt','CA1','wholebrain'))
+pd$Region = factor(pd$Region, levels = c('mPFC', 'CA1','wholebrain'))
 dat = read.csv('tables/mega_tcf4_CIBERSORT.csv',row.names = 1)[,1:7]
 id_vars = c('Genotype','Age','Line','FileID','Region')
+
+##############################################
+# fit multinomial dirichlet model
+library(DirichletReg)
+
+# set up the proportion constants 
+cellProp <- DR_data(dat)
+
+# model change in cell proportions as a function of Genotype and regressing out Line
+reg.P1    <- DirichReg(cellProp ~ Genotype + Line, subset = Age =='p1', 
+                     pd[rownames(cellProp),id_vars])
+reg.Adult <- DirichReg(cellProp ~ Genotype + Line , subset = Age %in% c('Adult'),
+                       pd[rownames(cellProp),id_vars])
+summary(reg.P1)
+summary(reg.Adult)
 
 ###############################
 # reformat into long data table
@@ -20,12 +36,6 @@ datLong = melt(cbind(dat,pd[rownames(dat),id_vars]),
 datLong = datLong[datLong$Age != 'p21',]
 datLong$Age = droplevels(datLong$Age)
 datLong$Type = paste0(datLong$Celltype,'.',datLong$Age)
-
-##############################################
-# fit multinomial dirichlet model
-library(MGLM)
-mnreg <- MGLMreg(formula = as.matrix(dat) ~ Genotype +Line, data = pd[rownames(dat),id_vars], dist = "GMN")
-coef(mnreg)
 
 ##############################################
 # fit multinomial model for shift in p1 brains
@@ -41,33 +51,28 @@ pvals = sapply(indList, function(ii){
 pvals[pvals<0.05]
 coefs[pvals<0.05]
 sigtype = names(coefs)[pvals<0.05]
+plotMe = c('New.Oligo.p1', 'Neuron.Adult', 'Mye.Oligo.Adult')
 
-pdf('plots/mega_tcf4_celltype_plots_adult.pdf',width=6,height = 2.5)
+pdf('plots/mega_tcf4_celltype_plots.pdf',width=6,height = 2.5)
 ggplot(aes(x = Region,y = Fraction,fill = Genotype),
-       data=datLong[datLong$Type %in% sigtype& datLong$Age=='Adult',])+
+       data=datLong[datLong$Type %in% plotMe, ])+
   geom_boxplot()+scale_fill_manual(values = c('gray50','red'),guide=FALSE)+
-  geom_point(pch = 21, position = position_jitterdodge())+
-  facet_wrap(~Celltype,nrow = 1)+ xlab('Tissue')+ylab('Proportion')+
-  theme(strip.background = element_blank(), strip.text.x = element_blank())
+  geom_point(pch = 21, position = position_jitterdodge())+ theme_bw() +
+  facet_wrap(~Age + Celltype, scales = 'free_y', nrow = 1)+ xlab('Tissue')+ylab('Proportion') 
+  #theme(strip.background = element_blank(), strip.text.x = element_blank())
 dev.off()
 
 
 
 pdf('plots/mega_tcf4_celltype_plots_p1.pdf',width=2.5,height = 2.5)
 ggplot(aes(x = Region,y = Fraction,fill = Genotype),
-       data=datLong[datLong$Type %in% sigtype & datLong$Age=='p1',])+
+       data=datLong[datLong$Age=='p1',])+
   geom_boxplot()+scale_fill_manual(values = c('gray50','red'),guide=FALSE)+
   geom_point(pch = 21, position = position_jitterdodge())+
   facet_wrap(~Celltype,scales = 'free',nrow = 1)+
   xlab('Tissue')+ylab('Proportion')+
   theme(strip.background = element_blank(), strip.text.x = element_blank())
 dev.off()
-
-
-
-
-
-
 
 
 
@@ -93,13 +98,6 @@ plot(colMeans(nCounts),main= 'Mean Expression',pch = 21, bg = factor(pd$Data),
 legend('topright', legend = levels( factor(pd$Data)), pt.bg = seq(length(levels( factor(pd$Data)))),
        pch = 21)
 dev.off()
-
-
-
-
-
-
-
 
 
 
