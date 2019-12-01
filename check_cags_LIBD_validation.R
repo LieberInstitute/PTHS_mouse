@@ -49,11 +49,11 @@ ff = summary(lm(eigenGene ~ mod - 1))
 
 cleanEigen = cleaningY(matrix(eigenGene, nr=1), mod, P=2)
 pdf("asd/plots/cagBoxplots_ASD_LIBD.pdf",h=6,w=5)
-par(mar=c(5,6,2,2), cex.axis=1.6,cex.lab=1.6)
+par(mar=c(5,6,2,2), cex.axis=2,cex.lab=2)
 palette(brewer.pal(5,"Set1"))
 boxplot(cleanEigen[1,] ~ pd$Dx, outline = FALSE,
-	ylim = range(cleanEigen[1,]),
-	ylab = paste0("CAG Eigengene: ", pcaVars, "% Var Expl | Model"))
+	ylim = range(cleanEigen[1,]),xlab="",
+	ylab = paste0("CAG Eigengene (Adj)"))
 points(cleanEigen[1,] ~ jitter(as.numeric(factor(pd$Dx)), amount=0.15),
 	pch = 21, bg=factor(pd$Dx))
 legend("topright", paste0("p=", signif(ff$coef[2,4],3)),cex=1.5)
@@ -85,14 +85,14 @@ pdf("asd/plots/boxplot_of_cell_counts_asd_libd.pdf",h=6,w=5)
 palette(brewer.pal(5,"Set1"))
 par(mar=c(5,6,3,2), cex.axis=2,cex.lab=2)
 boxplot(cellCounts_Exprs$Oligodendrocytes ~ pd$Dx,
-	ylab = "Oligo RNA Fraction", outline=FALSE,
-	ylim = range(cellCounts_Exprs$Oligodendrocytes))
+	ylab = "OL RNA Fraction ", outline=FALSE,
+	ylim = c(0,1), xlab="")
 points(cellCounts_Exprs$Oligodendrocytes ~ 
 	jitter(as.numeric(pd$Dx), amount=0.15),pch =21,bg=pd$Dx)
 legend("topright", paste0("p=", signif(fOligo$coef[2,4],3)),cex=1.5)
 boxplot(cellCounts_Exprs$OPC ~ pd$Dx,
 	ylab = "OPC RNA Fraction", outline=FALSE,
-	ylim = range(cellCounts_Exprs$OPC))
+	ylim = c(0,1), xlab="")
 points(cellCounts_Exprs$OPC ~ 
 	jitter(as.numeric(pd$Dx), amount=0.15),pch =21,bg=pd$Dx)
 legend("topleft", paste0("p=", signif(fOPC$coef[2,4],3)),cex=1.5)
@@ -104,14 +104,14 @@ pdf("asd/plots/boxplot_of_cell_counts_asd_libd_clean.pdf",h=6,w=5)
 palette(brewer.pal(5,"Set1"))
 par(mar=c(5,6,3,2), cex.axis=2,cex.lab=2)
 boxplot(countsAdj$Oligodendrocytes ~ pd$Dx,
-	ylab = "Oligo RNA Fraction | Model", outline=FALSE,
-	ylim = range(countsAdj$Oligodendrocytes))
+	ylab = "OL RNA Fraction (Adj)", outline=FALSE,
+	ylim = c(0,1),xlab="")
 points(countsAdj$Oligodendrocytes ~ 
 	jitter(as.numeric(pd$Dx), amount=0.15),pch =21,bg=pd$Dx)
 legend("topright", paste0("p=", signif(fOligo$coef[2,4],3)),cex=1.5)
 boxplot(countsAdj$OPC ~ pd$Dx,
-	ylab = "OPC RNA Fraction | Model", outline=FALSE,
-	ylim = range(countsAdj$OPC))
+	ylab = "OPC RNA Fraction (Adj)", outline=FALSE,
+	ylim = c(0,1))
 points(countsAdj$OPC ~ 
 	jitter(as.numeric(pd$Dx), amount=0.15),pch =21,bg=pd$Dx)
 legend("topleft", paste0("p=", signif(fOPC$coef[2,4],3)),cex=1.5)

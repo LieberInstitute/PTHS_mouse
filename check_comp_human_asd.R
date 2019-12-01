@@ -13,6 +13,10 @@ rse_gene = rse_gene[,-156] # drop flagged sample
 
 ## do the RNA-based estiamtion
 load("asd/rdas/singleCell_iPSC_quake_coefEsts_calibration_Zscale_adultOnly.rda")
+
+## write out for supp table
+write.csv(coefEsts, file = "asd/tables/table_s8_coefEsts.csv")
+
 yExprs = log2(getRPKM(rse_gene, "Length")+1)
 
 ## pheno
@@ -51,11 +55,11 @@ cleanEigen_full = cleanEigen_full*-1 # for consistency in plots
 table(sign(loads*-1)) # for consistency in plots
 
 pdf("asd/plots/cagBoxplots_ASD_geschwind_cleaned.pdf",h=6,w=7)
-par(mar=c(5,6,2,2), cex.axis=1.6,cex.lab=1.6)
+par(mar=c(5,6,2,2), cex.axis=2,cex.lab=2)
 palette(brewer.pal(5,"Set1"))
 boxplot(cleanEigen_full[1,] ~ pd$Diagnosis , outline = FALSE,
 	ylim = range(cleanEigen_full[1,]),
-	ylab = paste0("CAG Eigengene: ", pcaVarsAsd, "% Var Expl | Model"))
+	ylab = paste0("CAG Eigengene (Adj)"),xlab="")
 points(cleanEigen_full[1,] ~ jitter(as.numeric(factor(pd$Diagnosis)), amount=0.15),
 	pch = 20+as.numeric(factor(pd$Region)), bg=factor(pd$Diagnosis))
 legend("bottomright", paste0("ASD p=", signif(coefAsdCAG_full$coef[2,5],3)),
@@ -68,11 +72,11 @@ cleanEigen_full_qsva = cleaningY(matrix(eigenGeneAsd, nr=1), modAdj, P=3)
 cleanEigen_full_qsva = cleanEigen_full_qsva*-1 # for consistency in plots
 
 pdf("asd/plots/cagBoxplots_ASD_geschwind_cleaned_qsva.pdf",h=6,w=7)
-par(mar=c(5,6,2,2), cex.axis=1.6,cex.lab=1.6)
+par(mar=c(5,6,2,2), cex.axis=2,cex.lab=2)
 palette(brewer.pal(5,"Set1"))
 boxplot(cleanEigen_full_qsva[1,] ~ pd$Diagnosis , outline = FALSE,
 	ylim = range(cleanEigen_full_qsva[1,]),
-	ylab = paste0("CAG Eigengene: ", pcaVarsAsd, "% Var Expl | Model"))
+	ylab = paste0("CAG Eigengene (Adj)"))
 points(cleanEigen_full_qsva[1,] ~ jitter(as.numeric(factor(pd$Diagnosis)), amount=0.15),
 	pch = 20+as.numeric(factor(pd$Region)), bg=factor(pd$Diagnosis))
 legend("topright", paste0("ASD p=", signif(coefAsdCAG_full_qsva$coef[2,5],3)),
@@ -105,11 +109,11 @@ coefTcf4CAG_full_qsva = summary(lmer(eigenGeneTcf4 ~ modAdj - 1 + (1|pd$Brain.ID
 cleanEigenTcf4 = cleaningY(matrix(eigenGeneTcf4, nr=1), mod, P=2)
 
 pdf("asd/plots/tcf4Boxplots_ASD_geschwind_cleaned.pdf",h=6,w=7)
-par(mar=c(5,6,2,2), cex.axis=1.6,cex.lab=1.6)
+par(mar=c(5,6,2,2), cex.axis=2,cex.lab=2)
 palette(brewer.pal(5,"Set1"))
 boxplot(cleanEigenTcf4[1,] ~ pd$Diagnosis , outline = FALSE,
 	ylim = range(cleanEigenTcf4[1,]),
-	ylab = paste0("CAG Eigengene: ", pcaVarsAsd, "% Var Expl | Model"))
+	ylab = paste0("CAG Eigengene (Adj)"),xlab="")
 points(cleanEigenTcf4[1,] ~ jitter(as.numeric(factor(pd$Diagnosis)), amount=0.15),
 	pch = 20+as.numeric(factor(pd$Region)), bg=factor(pd$Diagnosis))
 legend("bottomright", paste0("ASD p=", signif(coefTcf4CAG_full$coef[2,5],3)),
@@ -184,14 +188,14 @@ pdf("asd/plots/boxplot_of_cell_counts_asd_geschwind_clean.pdf",h=6,w=7)
 palette(brewer.pal(5,"Set1"))
 par(mar=c(5,6,3,2), cex.axis=2,cex.lab=2)
 boxplot(countsAdj$Oligodendrocytes ~ pd$Diagnosis,
-	ylab = "Oligo RNA Fraction | Model", outline=FALSE,
-	ylim = range(countsAdj$Oligodendrocytes))
+	ylab = "OL RNA Fractions (Adj)", outline=FALSE,	
+	ylim = c(0,1),xlab="")
 points(countsAdj$Oligodendrocytes ~ 
 	jitter(as.numeric(pd$Diagnosis), amount=0.15),pch =21,bg=pd$Diagnosis)
 legend("topright", paste0("ASD p=", signif(coefAsd[4,5],3)),cex=1.5)
 boxplot(countsAdj$OPC ~ pd$Diagnosis,
-	ylab = "OPC RNA Fraction | Model", outline=FALSE,
-	ylim = range(countsAdj$OPC))
+	ylab = "OPC RNA Fraction (Adj)", outline=FALSE,
+	ylim = c(0,1),xlab="")
 points(countsAdj$OPC ~ 
 	jitter(as.numeric(pd$Diagnosis), amount=0.15),pch =21,bg=pd$Diagnosis)
 legend("topleft", paste0("ASD p=", signif(coefAsd[2,5],3)),cex=1.5)
@@ -202,7 +206,7 @@ palette(brewer.pal(5,"Set1"))
 par(mar=c(7,6,3,2), cex.axis=2,cex.lab=2,cex.main=2)
 boxplot(countsAdj$Oligodendrocytes ~ pd$Diagnosis,
 	ylab = "Proportion", outline=FALSE,
-	ylim = c(0,1),main="OLs",las=3)
+	ylim = c(0,1),main="OLs",las=3,xlab="")
 points(countsAdj$Oligodendrocytes ~ 
 	jitter(as.numeric(pd$Diagnosis), amount=0.15),pch =21,bg=pd$Diagnosis)
 legend("topright", paste0("ASD p=", signif(coefAsd[4,5],3)),cex=1.5)

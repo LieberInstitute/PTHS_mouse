@@ -89,7 +89,6 @@ load('rdas/qSVAs-geschwind_asd.rdas')
 identical(colnames(degMat), pd$SAMPLE_ID)
 mod = model.matrix(~Diagnosis + totalAssignedGene + Sequencing.Batch + 
                      Brain.Bank + RIN + Age + Sex, data =pd)
-degMat = degMat[
 qSVs = sva::qsva(degMat, mod) # identify quality surrogate variables
 modAdj = cbind(mod,qSVs)
 

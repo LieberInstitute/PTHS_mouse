@@ -48,17 +48,19 @@ pvals = sapply(indList, function(ii){
   tmp = summary(lm(formula = Fraction~Genotype +Line,data = datLong[ii,]))
   tmp$coefficients[2,'Pr(>|t|)']
 })
+
 pvals[pvals<0.05]
-coefs[pvals<0.05]
+\coefs[pvals<0.05]
 sigtype = names(coefs)[pvals<0.05]
 plotMe = c('New.Oligo.p1', 'Neuron.Adult', 'Mye.Oligo.Adult')
 
-pdf('plots/mega_tcf4_celltype_plots.pdf',width=6,height = 2.5)
+
+svg('plots/mega_tcf4_celltype_plots.svg',width=6,height = 2.5)
 ggplot(aes(x = Region,y = Fraction,fill = Genotype),
        data=datLong[datLong$Type %in% plotMe, ])+
   geom_boxplot()+scale_fill_manual(values = c('gray50','red'),guide=FALSE)+
   geom_point(pch = 21, position = position_jitterdodge())+ theme_bw() +
-  facet_wrap(~Age + Celltype, scales = 'free_y', nrow = 1)+ xlab('Tissue')+ylab('Proportion') 
+  facet_wrap(~Age + Celltype, scales = 'free', nrow = 1)+ xlab('Tissue')+ylab('Proportion') 
   #theme(strip.background = element_blank(), strip.text.x = element_blank())
 dev.off()
 
