@@ -25,7 +25,7 @@ Note: CIBERSORT cell type quantifications were estimated w/ the CIBERSORT web po
 JHPCE path: `/users/bphan/tcf4/PTHS_mouse`
 
 ## Globus
-Intermediates and and larger genomic data files generated along the RNA-seq data processing pipelines for this paper are deposited on Globus. These Globus would contain the files that would be referenced in the GitHub Rscripts pointing to files within , `/dcl01/lieber/ajaffe/Brady/philpot`, and . To access Globus, a user would have to [make a Globus ID](https://www.globusid.org/create) and [follow instructions](https://docs.globus.org/how-to/get-started/) to grab these data. Below are a brief description of the file types for various aggregates of data. The Globus links are provided below for different datasets and main file objects. The contents of each Globus roughly contains roughly the following:
+Intermediates and and larger genomic data files generated along the RNA-seq data processing pipelines for this paper are deposited on Globus. These Globus would contain the files that would be referenced in the GitHub Rscripts. To access Globus, a user would have to [make a Globus ID](https://www.globusid.org/create) and [follow instructions](https://docs.globus.org/how-to/get-started/) to grab these data. Below are descriptions of the general file types for various subsets of data both orignally published in `Phan, Bohlen et al.` and referenced from other studies. The contents of each Globus roughly contains roughly the following:
 
 - raw sequencing files within the `FASTQ` folder
 - FastQC reports for each corresponding set of sequencing file with the `FastQC` folder
