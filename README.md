@@ -26,6 +26,7 @@ JHPCE path: `/users/bphan/tcf4/PTHS_mouse`
 
 ## Globus
 Intermediates and and larger genomic data files generated along the RNA-seq data processing pipelines for this paper are deposited on Globus. These Globus would contain the files that would be referenced in the GitHub Rscripts pointing to files within , `/dcl01/lieber/ajaffe/Brady/philpot`, and . To access Globus, a user would have to [make a Globus ID](https://www.globusid.org/create) and [follow instructions](https://docs.globus.org/how-to/get-started/) to grab these data. Below are a brief description of the file types for various aggregates of data. The Globus links are provided below for different datasets and main file objects. The contents of each Globus roughly contains roughly the following:
+
 - raw sequencing files within the `FASTQ` folder
 - FastQC reports for each corresponding set of sequencing file with the `FastQC` folder
 - alignment `.bam` files within `HISAT2_out` folder
@@ -42,6 +43,7 @@ Intermediates and and larger genomic data files generated along the RNA-seq data
 - DESeq2 object from Mega DEG analyses: `mega_tcf4_ages_DESeq2_svaAdj.rda`
 - JHPCE path: `/dcl01/lieber/ajaffe/Brady/mouseRNAseq`
 - Globus path: https://app.globus.org/file-manager?origin_id=eee07044-9e5c-11ed-b579-33287ee02ec7&origin_path=%2F
+
 Note: the Mega DEG DESeq2 objects will contain gene counts from Maher, Philpot, and Sweatt lab mouse models of PTHS.
 
 Other datasets that were reprocessed from other monogenetic mutant models of ASD are also contained in this Globus. Briefly they are listed below:
