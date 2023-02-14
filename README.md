@@ -33,8 +33,9 @@ Intermediates and and larger genomic data files generated along the RNA-seq data
 - featureCounts objects at the gene, exon, or junction levels in the `Counts` folder
 - aggregated rawCount objects (# of times a unique mRNA fragment align to a gene)
 - aggregated rpkmCount object (rawCounts normalized by gene size and sequencing depth).
+- sample sheet: `annotated_pd.csv`
 
-1) Maher lab Tcf4<sup>+/tr</sup> mouse processed files:
+### Maher lab Tcf4<sup>+/tr</sup> mouse processed files:
 - counts: `rawCounts_mouse_tcf4_n36_rerun_paired_stranded.rda`
 - rpkm: `rpkmCounts_mouse_tcf4_n36_rerun_paired_stranded.rda`
 - DESeq2 object from Maher lab Tcf4<sup>+/tr</sup> mouse DEG analyses: `mouse_tcf4_ages_DESeq2_svaAdj.rda`
@@ -43,15 +44,20 @@ Intermediates and and larger genomic data files generated along the RNA-seq data
 - Globus path: https://app.globus.org/file-manager?origin_id=eee07044-9e5c-11ed-b579-33287ee02ec7&origin_path=%2F
 Note: the Mega DEG DESeq2 objects will contain gene counts from Maher, Philpot, and Sweatt lab mouse models of PTHS.
 
-[Philpot lab processed files](to add)
-- Philpot lab Tcf4<sup>+/mut</sup> mouse counts: `rawCounts_philpot_OCT20_n58.rda`
-- Philpot lab Tcf4<sup>+/mut</sup> mouse rpkm: `rpkmCounts_philpot_OCT20_n58.rda`
-- DESeq object of Tcf4 mutation across Philpot mouse samples: `philpot_by_age_DESeq2_svaAdj.rda`
-- JHPCE path: `/dcl01/lieber/ajaffe/Brady/philpot`
-- Globus path: 
- 
+Other datasets that were reprocessed from other monogenetic mutant models of ASD are also contained in this Globus. Briefly they are listed below:
+1) MeCP2 mutant mouse from [Gabel et al.](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4480648) in the [`Rett`](https://app.globus.org/file-manager?origin_id=eee07044-9e5c-11ed-b579-33287ee02ec7&origin_path=%2FRett%2F) folder
+2) Pten mutant mouse from [Tilot et al.](https://www.nature.com/articles/mp201517) in the [`TilotPTEN`](https://app.globus.org/file-manager?origin_id=eee07044-9e5c-11ed-b579-33287ee02ec7&origin_path=%2FTilotPTEN%2F) folder
 
-[Sweatt lab processed files](to add)
-- Philpot lab Tcf4<sup>+/mut</sup> mouse counts: `rawCounts_philpot_OCT20_n58.rda`
-- Philpot lab Tcf4<sup>+/mut</sup> mouse rpkm: `rpkmCounts_philpot_OCT20_n58.rda`
+### Philpot lab Tcf4<sup>+/mut</sup> mouse processed files to use:
+- counts: `rawCounts_philpot_OCT20_n58.rda`
+- rpkm: `rpkmCounts_philpot_OCT20_n58.rda`
+- DESeq object of Tcf4 mutation: `philpot_by_age_DESeq2_svaAdj.rda`
+- JHPCE path: `/dcl01/lieber/ajaffe/Brady/philpot`
+- Globus path: (todo)
+
+### Sweatt lab Tcf4<sup>+/tr</sup> mouse processed files
+- counts: `rawCounts_sweatt_OCT20_n16.rda`
+- rpkm: `rpkmCounts_sweatt_OCT20_n16.rda`
+- Globus path: (todo)
 - JHPCE path: `/dcl01/lieber/ajaffe/Brady/sweatt`
+Note: these sequencing dataset were originally published in [Cell Reports, 2016 by Kennedy et al.](https://doi.org/10.1016/j.celrep.2016.08.004), so usage and citation should be to this publication. We are grateful for access to these data for this publication. 
