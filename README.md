@@ -10,10 +10,17 @@
 1) [Sample sheet](tcf4_mouse/tables/stable1_RNAseq_sample_info.xlsx) describing files, genotype, sex, batch, etc between the 2 sets of RNA-seq from the Maher lab and Philpot lab. An aggregated phenotype table of these samples are at [here](tcf4_mouse/tables/maher_philpot_PTHS_mouse_rnaseq_pheno_relativePaths.csv)
 
 2) DEG analyses
-- Analyses 
+- [Maher lab Tcf4<sup>+/tr</sup> mouse DEG](tcf4_mouse/analyze_tcf4_mouse_DESeq2.R)
+- [Maher lab Tcf4<sup>+/tr</sup> mouse DEG by age group](tcf4_mouse/analyze_tcf4_mouse_by_ages.R)
+- [Mega DEG analyses across multiple Tcf4<sup>+/mut</sup> mouse models by age group](fig1c_analyze_mega_tcf4_ages.R)
 
-3) Figures: Individual scripts to generate various panels from the main publication are kept in the main github directory:
+3) Cell type-specific Expression Analysis (CSEA)
+- [Across mega DEGs by age](fig2a_cell_type_enrichment.R)
 
+4) [CIBERSORT analyses](fig2c_analyze_mega_tcf4_CIBERSORT.R)
+Note: CIBERSORT cell type quantifications were estimated w/ the CIBERSORT web portal. These Rscripts only assess the group statistical differences in cell type abundance between animals and cohorts.
+
+5) [Comparison to MeCP2 and Pten mutant mouse models](fig3_compare_mecp2_and_pten.R)
 
 ## [Globus](https://app.globus.org/file-manager?origin_id=eee07044-9e5c-11ed-b579-33287ee02ec7&origin_path=%2F)
 
