@@ -35,6 +35,8 @@ Intermediates and and larger genomic data files generated along the RNA-seq data
 - aggregated rawCount objects (# of times a unique mRNA fragment align to a gene)
 - aggregated rpkmCount object (rawCounts normalized by gene size and sequencing depth).
 - sample sheet: `annotated_pd.csv`
+- mega RNA-seq counts--used in mega Tcf4 +/mut differential analyses: `rawCounts_mega_dataset_nov14_n110.rda`
+- mega RNA-seq counts with Pten and Mecp2 mice--used in cross-syndrome analyses: `rawCounts_mega_dataset_asd_mice_nov17_n141.rda`
 
 ### Maher lab Tcf4<sup>+/tr</sup> mouse processed files:
 - counts: `rawCounts_mouse_tcf4_n36_rerun_paired_stranded.rda`
