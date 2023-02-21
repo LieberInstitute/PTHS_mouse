@@ -45,6 +45,7 @@ Intermediates and and larger genomic data files generated along the RNA-seq data
 - DESeq2 object from Mega DEG analyses: `mega_tcf4_ages_DESeq2_svaAdj.rda`
 - JHPCE path: `/dcl01/lieber/ajaffe/Brady/mouseRNAseq`
 - Globus path: https://app.globus.org/file-manager?origin_id=eee07044-9e5c-11ed-b579-33287ee02ec7&origin_path=%2F
+- Globus endpoint: `eee07044-9e5c-11ed-b579-33287ee02ec7`
 
 Note: the Mega DEG DESeq2 objects will contain gene counts from Maher, Philpot, and Sweatt lab mouse models of PTHS.
 
@@ -57,12 +58,14 @@ Other datasets that were reprocessed from other monogenetic mutant models of ASD
 - rpkm: `rpkmCounts_philpot_OCT20_n58.rda`
 - DESeq object of Tcf4 mutation: `philpot_by_age_DESeq2_svaAdj.rda`
 - JHPCE path: `/dcl01/lieber/ajaffe/Brady/philpot`
-- Globus path: (todo)
+- Globus path: https://app.globus.org/file-manager?origin_id=2a7e9dca-b1f3-11ed-a502-1f2a3a60e896&origin_path=%2F~%2F
+- Globus endpoint: `2a7e9dca-b1f3-11ed-a502-1f2a3a60e896`
 
 ### Sweatt lab Tcf4<sup>+/tr</sup> mouse processed files
 - counts: `rawCounts_sweatt_OCT20_n16.rda`
 - rpkm: `rpkmCounts_sweatt_OCT20_n16.rda`
-- Globus path: (todo)
+- Globus path: https://app.globus.org/file-manager?origin_id=844a91d8-b1f3-11ed-a502-1f2a3a60e896&origin_path=%2F~%2F
+- Globus endpoint: `844a91d8-b1f3-11ed-a502-1f2a3a60e896`
 - JHPCE path: `/dcl01/lieber/ajaffe/Brady/sweatt`
 
 Note: these sequencing dataset were originally published in [Cell Reports, 2016 by Kennedy et al.](https://doi.org/10.1016/j.celrep.2016.08.004), so usage and citation should be to this publication. We are grateful for access to these data for this publication. 
