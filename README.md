@@ -44,8 +44,8 @@ Intermediates and and larger genomic data files generated along the RNA-seq data
 - DESeq2 object from Maher lab Tcf4<sup>+/tr</sup> mouse DEG analyses: `mouse_tcf4_ages_DESeq2_svaAdj.rda`
 - DESeq2 object from Mega DEG analyses: `mega_tcf4_ages_DESeq2_svaAdj.rda`
 - JHPCE path: `/dcl01/lieber/ajaffe/Brady/mouseRNAseq`
-- Globus path: https://app.globus.org/file-manager?origin_id=eee07044-9e5c-11ed-b579-33287ee02ec7&origin_path=%2F
-- Globus endpoint: `eee07044-9e5c-11ed-b579-33287ee02ec7`
+- Globus path: https://app.globus.org/file-manager?origin_id=9a91a5da-41c2-11ee-88f9-03dc0e0dcc45&origin_path=%2F
+- Globus endpoint: `9a91a5da-41c2-11ee-88f9-03dc0e0dcc45`
 
 Note: the Mega DEG DESeq2 objects will contain gene counts from Maher, Philpot, and Sweatt lab mouse models of PTHS.
 
